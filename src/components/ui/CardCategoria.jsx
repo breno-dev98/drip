@@ -11,8 +11,8 @@ const CardCategoria = ({ title, description, image }) => {
   const isMobile = useMediaQuery("(max-width:600px)");
   return (
     <Card  sx={{
-        maxWidth: "300px",
-        width: "auto",
+       maxWidth: "400px",
+        width: '400px',
         elevation: 4,
         cursor: 'pointer',
         transition: "transform 0.3s ease, box-shadow 0.3s ease", // Suaviza a transição

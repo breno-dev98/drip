@@ -4,9 +4,10 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
-import { Container, Divider, Drawer, List, ListItem, ListItemButton, Menu, useMediaQuery } from "@mui/material";
+import { Container, Divider, Drawer, List, ListItem, ListItemButton, ListItemIcon, Menu, useMediaQuery } from "@mui/material";
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import { House, LayoutGrid, Tags } from "lucide-react";
 
 export default function Header() {
   const [open, setOpen] = useState(false);
@@ -15,9 +16,9 @@ export default function Header() {
   };
   const isMobile = useMediaQuery("(max-width:600px)");
   const pagesLinks = [
-    {to: '/', label: "Inicio"},
-    {to: '/categorias', label: "Categorias"},
-    {to: '/marcas', label: "Marcas"},
+    {to: '/', label: "Inicio", icon: <House size={24}/>},
+    {to: '/categorias', label: "Categorias", icon: <LayoutGrid  size={24}/>},
+    {to: '/marcas', label: "Marcas", icon: <Tags size={24}/> },
   ]
   return (
     <Box >
@@ -46,12 +47,15 @@ export default function Header() {
                 <Box sx={{width: 250}} role='menu'>
                 <List>
                   <ListItem>
-                    <Typography variant="h4" fontWeight='bold' textTransform='uppercase'>Menu</Typography>
+                    <Typography variant="h5" fontWeight='bold' textTransform='uppercase'>Menu</Typography>
                   </ListItem>
                   <Divider />
                 {pagesLinks.map((item, index) => (
                 <ListItemButton key={index} onClick={toggleDrawer(false)}>
-                <Link to={item.to} style={{ textDecoration: "none" }}>
+                <Link to={item.to} style={{ textDecoration: "none", display: 'flex', alignItems: 'center' }}>
+                <ListItemIcon>
+                  {item.icon}
+                </ListItemIcon>
                   <Typography variant="h6" color="textPrimary" fontWeight='bold' textTransform='uppercase'>
                     {item.label}
                   </Typography>
