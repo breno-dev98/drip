@@ -9,7 +9,7 @@ import {
   Alert,
   Snackbar
 } from "@mui/material";
-import { Trash } from "lucide-react";
+import { Edit, Trash } from "lucide-react";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
 import { categoriaServices } from "../../services/categoriaServices";
 
@@ -44,12 +44,20 @@ const CardCategoria = ({ title, description, image, itemId }) => {
       >
         <CardContent sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
           <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+            {/* EDIT BUTTON */}
+            <IconButton
+            sx={{ color: "gray", "&:hover": { color: "blue" } }}
+            >
+              <Edit size={24}/>
+            </IconButton>
+            {/* DELETE BUTTON */}
             <IconButton
               sx={{ color: "gray", "&:hover": { color: "red" } }}
               onClick={() => setOpen(true)}
             >
               <Trash size={24} />
             </IconButton>
+            
           </Box>
           <CardMedia
             component="img"
