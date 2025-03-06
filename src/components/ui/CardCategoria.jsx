@@ -11,14 +11,20 @@ import {
 } from "@mui/material";
 import { Trash } from "lucide-react";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
+import { categoriaServices } from "../../services/categoriaServices";
 
-const CardCategoria = ({ title, description, image }) => {
+const CardCategoria = ({ title, description, image, itemId }) => {
   const [open, setOpen] = useState(false);
   const [alertOpen, setAlertOpen] = useState(false);
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     setOpen(false);
     setAlertOpen(true); // Exibe o alerta
+    try {
+      await categoriaServices.delete(itemId)
+    } catch (error) {
+      console.error("Erro ao deletar a categoria");
+    }    
   };
 
   return (

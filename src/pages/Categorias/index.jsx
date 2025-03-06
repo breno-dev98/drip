@@ -49,7 +49,7 @@ const CategoriasPage = () => {
             title={item.nome}
             description={item.descricao}
             image={item.imagem}
-            deleteItem={item.id}
+            itemId={item.id}
           />
         ))}
       </Container>
