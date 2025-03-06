@@ -24,7 +24,7 @@ export default function Header() {
   ]
   return (
     <Box >
-      <AppBar position="static">
+      <AppBar position="fixed">
         <Container maxWidth="lg" disableGutters>
           <Toolbar>
             {isMobile && (

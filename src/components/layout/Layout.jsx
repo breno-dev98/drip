@@ -6,7 +6,7 @@ export default function Layout() {
     return (
         <>
         <Header />
-        <Box height="calc(100vh - 60px)" paddingTop="60px" bgcolor="#fcfcfc">
+        <Box height="calc(100vh - 60px)" paddingTop="80px" bgcolor="#fcfcfc">
             <Outlet />
         </Box>
         </>

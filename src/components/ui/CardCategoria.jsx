@@ -12,9 +12,11 @@ import {
 import { Edit, Trash } from "lucide-react";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
 import { categoriaServices } from "../../services/categoriaServices";
+import ModalCategoria from "./ModalCategoria";
 
 const CardCategoria = ({ title, description, image, itemId }) => {
   const [open, setOpen] = useState(false);
+  const [openModal, setOpenModal] = useState(false)
   const [alertOpen, setAlertOpen] = useState(false);
 
   const handleDelete = async () => {
@@ -47,6 +49,7 @@ const CardCategoria = ({ title, description, image, itemId }) => {
             {/* EDIT BUTTON */}
             <IconButton
             sx={{ color: "gray", "&:hover": { color: "blue" } }}
+            onClick={() => console.log(itemId)}
             >
               <Edit size={24}/>
             </IconButton>
@@ -79,6 +82,9 @@ const CardCategoria = ({ title, description, image, itemId }) => {
           </Typography>
         </CardContent>
       </Card>
+
+      {/* Modal de Categoria */}
+      <ModalCategoria visibilityButton={false}/>
 
       {/* Modal de Confirmação */}
       <ConfirmDeleteModal

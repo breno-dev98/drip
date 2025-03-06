@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import { categoriaServices } from "../../services/categoriaServices"; // Importa o serviço
 
-const ModalCategoria = () => {
+const ModalCategoria = ({visibilityButton = true}) => {
   const { register, handleSubmit, setValue, reset } = useForm();
   const [open, setOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState(null);
@@ -51,9 +51,9 @@ const ModalCategoria = () => {
 
   return (
     <>
-      <Button variant="contained" onClick={handleOpen}>
+      {visibilityButton && <Button variant="contained" onClick={handleOpen}>
         Adicionar Categoria
-      </Button>
+      </Button>}
       <Dialog open={open} onClose={handleClose} fullWidth maxWidth="xs">
         <DialogTitle fontWeight="bold" fontSize="24px" textTransform="uppercase">
           Criar Categoria
