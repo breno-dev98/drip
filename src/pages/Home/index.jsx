@@ -12,8 +12,9 @@ const HomePage = () => {
 
     const handleCloseModal = () => setOpenModal(false)
     const fieldsList = [
-        {label: 'Nome', name: 'nome', type: 'text'},
-        {label: 'Email', name: 'email', type: 'email'},
+        {label: 'Nome', name: 'nome', type: 'text', maxLength: 255},
+        {label: 'Descrição', name: 'descricao', type: 'text', multiline: true, rows: 3},
+        {name: 'imagem', type: 'file'},
     ]
     return ( 
         <Container maxWidth='lg'>
