@@ -5,7 +5,6 @@ const HomePage = () => {
     return ( 
         <Container maxWidth='lg'>
         <h1>HOME</h1>
-        <AlertModal />
         </Container>
      );
 }

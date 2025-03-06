@@ -4,7 +4,8 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
-import { Container, Divider, Drawer, List, ListItem, ListItemButton, ListItemIcon, Menu, useMediaQuery } from "@mui/material";
+import { useIsMobile } from "../../utils/MediaQuery";
+import { Container, Divider, Drawer, List, ListItem, ListItemButton, ListItemIcon } from "@mui/material";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { House, LayoutGrid, Tags } from "lucide-react";
@@ -14,7 +15,8 @@ export default function Header() {
   const toggleDrawer = (newOpen) => () => {
     setOpen(newOpen);
   };
-  const isMobile = useMediaQuery("(max-width:600px)");
+
+  const isMobile = useIsMobile()
   const pagesLinks = [
     {to: '/', label: "Inicio", icon: <House size={24}/>},
     {to: '/categorias', label: "Categorias", icon: <LayoutGrid  size={24}/>},
