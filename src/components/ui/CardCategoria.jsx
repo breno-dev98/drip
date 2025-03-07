@@ -16,7 +16,6 @@ import ModalCategoria from "./ModalCategoria";
 
 const CardCategoria = ({ title, description, image, itemId }) => {
   const [open, setOpen] = useState(false);
-  const [openModal, setOpenModal] = useState(false)
   const [alertOpen, setAlertOpen] = useState(false);
 
   const handleDelete = async () => {
@@ -28,6 +27,7 @@ const CardCategoria = ({ title, description, image, itemId }) => {
       console.error("Erro ao deletar a categoria");
     }    
   };
+
 
   return (
     <>

@@ -20,7 +20,7 @@ const CategoriasPage = () => {
     };
 
     fetchCategorias();
-  }, [categorias]);
+  }, []);
   return (
     <Container maxWidth="lg" sx={{ height: "100vh" }}>
       <Box display="flex" sx={{justifyContent: isMobile ? "" : "space-between", flexDirection: isMobile ? "column" : ""}}>
