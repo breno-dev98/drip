@@ -10,6 +10,10 @@ const ModalReutilizavel = ({type = 'create', headerTitle = 'Header Title Modal',
     
     
     const {register, handleSubmit, reset, formState: {errors}} = useForm({resolver: zodResolver(schema)})
+    const handleClose = () => {
+        onClose();
+        reset();
+    }
     const onSubmit = (data) => {
         console.log("Dados enviados:",data);
         reset()
@@ -43,7 +47,7 @@ const ModalReutilizavel = ({type = 'create', headerTitle = 'Header Title Modal',
                 <Divider />
                 <DialogActions sx={{my: 1}}>
                     <Button type="submit" variant="contained" color='primary'>{type === 'create' ? 'Adicionar' : 'Atualizar'}</Button>
-                    <Button onClick={() => {onClose(); reset()}} variant="outlined" color='error'>Cancelar</Button>
+                    <Button onClick={handleClose} variant="outlined" color='error'>Cancelar</Button>
                 </DialogActions>
             </form>
         </Dialog>
