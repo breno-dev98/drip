@@ -8,9 +8,10 @@ import ModalReutilizavel from "../../components/ui/ModalReutilizavel";
 import LoadingBackdrop from "../../components/ui/LoadingBackDrop";
 import FloatingButton from "../../components/ui/FloatingButton";
 import ConfirmDeleteModal from "../../components/ui/ConfirmDeleteModal";
+import InputSearch from "../../components/ui/InputSearch";
 
 const CategoriasPage = () => {
-  const isMobile = useIsMobile();
+  const [busca, setBusca] = useState("")
   const [categorias, setCategorias] = useState([]);
   const [categoria, setCategoria] = useState("");
   const [categoriaParaExcluir, setCategoriaParaExcluir] = useState(null);
@@ -24,6 +25,9 @@ const CategoriasPage = () => {
     descricao: z.string().max(255, "Descrição deve conter no máximo 255 caracteres.").nonempty("O campo Descrição é obrigatório."),
   });
 
+  const categoriasFiltradas = categorias.filter(
+    (cat) => cat.nome.toLowerCase().includes(busca.toLocaleLowerCase()) || cat.descricao.toLowerCase().includes(busca.toLocaleLowerCase())
+  );
   const handleEdit = async ({ type, item }) => {
     const categoria = await categoriaServices.getById(item.id);
     setCategoria(categoria);
@@ -105,23 +109,11 @@ const CategoriasPage = () => {
         <LoadingBackdrop open={loading} />
       ) : (
         <Container maxWidth="lg" sx={{ height: "100vh" }}>
-          <Box display="flex" sx={{ justifyContent: isMobile ? "" : "space-between", flexDirection: isMobile ? "column" : "" }}>
+          <Box display="flex" flexDirection="column" gap={1}>
+            <InputSearch value={busca} onSearch={setBusca} />
             <Typography variant="h4" textTransform="uppercase" textAlign="center" fontWeight="bold">
               CATEGORIAS
             </Typography>
-
-            <ModalReutilizavel
-              headerAlign="center"
-              headerTitle={`${modalType === "create" ? "Criar" : "Atualizar"} Categoria`}
-              fields={fieldsList}
-              schema={schema}
-              open={openModal}
-              type={modalType}
-              categoria={categoria}
-              onClose={handleCloseModal}
-              onSubmit={onSubmit}
-            />
-            <FloatingButton onClick={() => handleOpenModal("create")} />
           </Box>
 
           <Container
@@ -134,10 +126,24 @@ const CategoriasPage = () => {
               gap: 2,
             }}
           >
-            {categorias?.map((items) => (
+            {categoriasFiltradas?.map((items) => (
               <CardCategoria key={items.id} item={items} openModal={(params) => handleEdit(params)} onDelete={(params) => handleDelete(params)} />
             ))}
           </Container>
+          {/* Modal de Adicionar Categoria */}
+          <ModalReutilizavel
+            headerAlign="center"
+            headerTitle={`${modalType === "create" ? "Criar" : "Atualizar"} Categoria`}
+            fields={fieldsList}
+            schema={schema}
+            open={openModal}
+            type={modalType}
+            categoria={categoria}
+            onClose={handleCloseModal}
+            onSubmit={onSubmit}
+          />
+          {/* Botão flutuante */}
+          <FloatingButton onClick={() => handleOpenModal("create")} />
           {/* Modal de Confirmação */}
           <ConfirmDeleteModal
             open={openAlert}
