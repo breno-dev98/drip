@@ -1,26 +1,45 @@
-import { Box, CircularProgress, Container, Typography } from "@mui/material";
-import CardCategoria from "../../components/ui/CardCategoria";
+import { Box, Container, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { categoriaServices } from "../../services/categoriaServices";
-import ModalCategoria from "../../components/ui/ModalCategoria";
 import { useIsMobile } from "../../utils/MediaQuery";
+import { z } from "zod";
+import CardCategoria from "../../components/ui/CardCategoria";
+import ModalReutilizavel from "../../components/ui/ModalReutilizavel";
 import LoadingBackdrop from "../../components/ui/LoadingBackDrop";
+import FloatingButton from "../../components/ui/FloatingButton";
 
 const CategoriasPage = () => {
   const [categorias, setCategorias] = useState([]);
-  const isMobile = useIsMobile()
-  const [loading, setLoading] = useState(false)
-  
+  const isMobile = useIsMobile();
+  const [openModal, setOpenModal] = useState(false);
+  const [modalType, setModalType] = useState("create");
+  const schema = z.object({
+    nome: z.string().max(255, "Nome deve ter no máximo 255 caracteres.").nonempty("O campo Nome é obrigatório."),
+    descricao: z.string().max(255, "Descrição deve conter no máximo 255 caracteres.").nonempty("O campo Descrição é obrigatório."),
+  });
+  const handleOpenModal = (type) => {
+    setModalType(type);
+    setOpenModal(true);
+  };
+
+  const handleCloseModal = () => setOpenModal(false);
+  const fieldsList = [
+    { label: "Nome", name: "nome", type: "text", maxLength: 255 },
+    { label: "Descrição", name: "descricao", type: "text", multiline: true, rows: 3 },
+    { name: "imagem", type: "file" },
+  ];
+  const [loading, setLoading] = useState(false);
+
   useEffect(() => {
     const fetchCategorias = async () => {
       try {
-        setLoading(true)
+        setLoading(true);
         const data = await categoriaServices.getAll();
         setCategorias(data);
       } catch (error) {
         console.error("Erro ao carregar categorias", error);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
     };
 
@@ -28,42 +47,43 @@ const CategoriasPage = () => {
   }, []);
   return (
     <>
-    {loading ? <LoadingBackdrop open={loading}/> : (
-      <Container maxWidth="lg" sx={{ height: "100vh" }}>
-      <Box display="flex" sx={{justifyContent: isMobile ? "" : "space-between", flexDirection: isMobile ? "column" : ""}}>
-        <Typography
-          variant="h4"
-          textTransform="uppercase"
-          textAlign="center"
-          fontWeight="bold"
-        >
-          CATEGORIAS
-        </Typography>
-        <ModalCategoria/>
-      </Box>
+      {loading ? (
+        <LoadingBackdrop open={loading} />
+      ) : (
+        <Container maxWidth="lg" sx={{ height: "100vh" }}>
+          <Box display="flex" sx={{ justifyContent: isMobile ? "" : "space-between", flexDirection: isMobile ? "column" : "" }}>
+            <Typography variant="h4" textTransform="uppercase" textAlign="center" fontWeight="bold">
+              CATEGORIAS
+            </Typography>
 
-      <Container
-        maxWidth="lg"
-        sx={{
-          my: 4,
-          display: "flex",
-          flexWrap: "wrap",
-          justifyContent: "center",
-          gap: 2,
-        }}
-      >
-        {categorias?.map((item, index) => (
-          <CardCategoria
-            key={index}
-            title={item.nome}
-            description={item.descricao}
-            image={item.imagem}
-            itemId={item.id}
-          />
-        ))}
-      </Container>
-    </Container>
-    )}
+            <ModalReutilizavel
+              headerAlign="center"
+              headerTitle={`${modalType === "create" ? "Criar" : "Atualizar"} Categoria`}
+              fields={fieldsList}
+              schema={schema}
+              open={openModal}
+              type={modalType}
+              onClose={handleCloseModal}
+            />
+            <FloatingButton onClick={() => handleOpenModal("create")} />
+          </Box>
+
+          <Container
+            maxWidth="lg"
+            sx={{
+              my: 4,
+              display: "flex",
+              flexWrap: "wrap",
+              justifyContent: "center",
+              gap: 2,
+            }}
+          >
+            {categorias?.map((item, index) => (
+              <CardCategoria key={index} title={item.nome} description={item.descricao} image={item.imagem} itemId={item.id} />
+            ))}
+          </Container>
+        </Container>
+      )}
     </>
   );
 };
