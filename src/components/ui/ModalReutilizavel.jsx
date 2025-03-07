@@ -2,7 +2,7 @@ import { Button, Dialog, DialogActions, Divider, FormControl, TextField, Typogra
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
-const ModalReutilizavel = ({ type = "create", headerTitle = "Header Title Modal", headerAlign = "left", fields, open, onClose, schema, categoria }) => {
+const ModalReutilizavel = ({ type = "create", headerTitle = "Header Title Modal", headerAlign = "left", fields, open, onClose, schema, categoria, onSubmit }) => {
   const {
     register,
     handleSubmit,
@@ -12,18 +12,17 @@ const ModalReutilizavel = ({ type = "create", headerTitle = "Header Title Modal"
   } = useForm({ resolver: zodResolver(schema) });
   const handleClose = () => {
     onClose();
-    reset();
   };
-  const onSubmit = (data) => {
-    console.log("Dados enviados:", data);
-    reset();
-    onClose();
-  };
+
+  useEffect(() => {
+    reset()
+  }, [onClose])
 
   useEffect(() => {
     if (open && type === 'update') {
       setValue("nome", categoria.nome);
       setValue("descricao", categoria.descricao);
+      setValue("imagem", categoria.imagem);
     }
   }, [open, categoria, setValue])
 

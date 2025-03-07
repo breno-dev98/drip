@@ -14,18 +14,23 @@ const CategoriasPage = () => {
   const isMobile = useIsMobile();
   const [openModal, setOpenModal] = useState(false);
   const [modalType, setModalType] = useState("create");
+
   const schema = z.object({
     nome: z.string().max(255, "Nome deve ter no máximo 255 caracteres.").nonempty("O campo Nome é obrigatório."),
     descricao: z.string().max(255, "Descrição deve conter no máximo 255 caracteres.").nonempty("O campo Descrição é obrigatório."),
   });
-  const handleOpenModal = async ({type, item}) => {
+
+  const handleEdit = async ({type, item}) => {
     const categoria = await categoriaServices.getById(item.id);
-    console.log(categoria);
     setCategoria(categoria)
     setModalType(type);
     setOpenModal(true);
-    
   };
+
+  const handleOpenModal = (type) => {
+    setModalType(type);
+    setOpenModal(true);
+  }
 
   const handleCloseModal = () => setOpenModal(false);
   const fieldsList = [
@@ -50,6 +55,27 @@ const CategoriasPage = () => {
 
     fetchCategorias();
   }, []);
+
+  const onSubmit = async (data) => {
+    try {
+      if (modalType === "create") {
+        // Chama o serviço para criar categoria
+        const response = await categoriaServices.create(data);
+        setCategorias((prev) => [...prev, response]); // Atualiza a lista com a nova categoria
+      } else if (modalType === "update") {
+        // Chama o serviço para atualizar categoria
+        const response = await categoriaServices.update(categoria.id, data);
+        setCategorias((prev) => prev.map((c) => (c.id === categoria.id ? response : c))); // Atualiza a categoria na lista
+      }
+      setOpenModal(false); // Fecha o modal após o envio
+    } catch (error) {
+      console.error("Erro ao enviar dados:", error);
+      // Aqui você pode, por exemplo, exibir um alerta ou notificação para o usuário
+      // Exemplo:
+      alert("Ocorreu um erro ao tentar salvar a categoria. Tente novamente mais tarde.");
+    }
+  };
+
   return (
     <>
       {loading ? (
@@ -70,6 +96,7 @@ const CategoriasPage = () => {
               type={modalType}
               categoria={categoria}
               onClose={handleCloseModal}
+              onSubmit={onSubmit}
             />
             <FloatingButton onClick={() => handleOpenModal("create")} />
           </Box>
@@ -85,7 +112,7 @@ const CategoriasPage = () => {
             }}
           >
             {categorias?.map((items) => (
-              <CardCategoria key={items.id} item={items} openModal={(params) => handleOpenModal(params)} />
+              <CardCategoria key={items.id} item={items} openModal={(params) => handleEdit(params)} />
             ))}
           </Container>
         </Container>
