@@ -1,10 +1,15 @@
 import { Button, Container } from "@mui/material";
 import ModalReutilizavel from "../../components/ui/ModalReutilizavel";
 import { useState } from "react";
+import { z } from  'zod'
 
 const HomePage = () => {
     const [openModal, setOpenModal] = useState(false)
     const [modalType, setModalType] = useState('create')
+    const schema = z.object({
+        nome: z.string().max(255, "Nome deve ter no máximo 255 caracteres.").nonempty("O campo Nome é obrigatório."),
+        descricao: z.string().max(255, "Descrição deve conter no máximo 255 caracteres.").nonempty("O campo Descrição é obrigatório.")
+    })
     const handleOpenModal = (type) => {
         setModalType(type)
         setOpenModal(true)
@@ -23,6 +28,7 @@ const HomePage = () => {
         headerAlign="center"
         headerTitle={`${modalType === 'create' ? 'Criar' : 'Atualizar'} Categoria`}
         fields={fieldsList}
+        schema={schema}
         open={openModal}
         type={modalType}
         onClose={handleCloseModal}/>

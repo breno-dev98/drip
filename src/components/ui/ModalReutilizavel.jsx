@@ -1,12 +1,8 @@
 import { Button, Dialog, DialogActions, Divider, FormControl, TextField, Typography } from "@mui/material";
 import { useForm } from "react-hook-form";
-import { z } from 'zod'
 import { zodResolver } from "@hookform/resolvers/zod";
-const ModalReutilizavel = ({type = 'create', headerTitle = 'Header Title Modal', headerAlign = 'left', fields, open, onClose}) => {
-    const schema = z.object({
-        nome: z.string().max(255, "Nome deve ter no máximo 255 caracteres.").nonempty("O campo Nome é obrigatório."),
-        email: z.string().email("Email inválido!").nonempty("O campo Email é obrigatório.")
-    })
+const ModalReutilizavel = ({type = 'create', headerTitle = 'Header Title Modal', headerAlign = 'left', fields, open, onClose, schema}) => {
+    
     
     
     const {register, handleSubmit, reset, formState: {errors}} = useForm({resolver: zodResolver(schema)})
@@ -23,8 +19,8 @@ const ModalReutilizavel = ({type = 'create', headerTitle = 'Header Title Modal',
             <Divider />
             <form onSubmit={handleSubmit(onSubmit)}>
                 <FormControl fullWidth sx={{padding: '1rem 1.8rem', gap: 1}}>
-                    {fields?.map(item => (
-                        <TextField key={item.label} label={item.label} 
+                    {fields?.map((item, index) => (
+                        <TextField key={index} label={item.label} 
                         type={item.type} 
                         name={item.name}
                         variant="outlined" 
