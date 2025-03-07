@@ -14,16 +14,15 @@ import ConfirmDeleteModal from "./ConfirmDeleteModal";
 import { categoriaServices } from "../../services/categoriaServices";
 import ModalCategoria from "./ModalCategoria";
 
-const CardCategoria = ({ title, description, image, itemId }) => {
+const CardCategoria = ({ title, description, image, item, openModal }) => {
   const [open, setOpen] = useState(false);
-  const [openModal, setOpenModal] = useState(false)
   const [alertOpen, setAlertOpen] = useState(false);
 
   const handleDelete = async () => {
     setOpen(false);
     setAlertOpen(true); // Exibe o alerta
     try {
-      await categoriaServices.delete(itemId)
+      await categoriaServices.delete(item.id)
     } catch (error) {
       console.error("Erro ao deletar a categoria");
     }    
@@ -49,7 +48,7 @@ const CardCategoria = ({ title, description, image, itemId }) => {
             {/* EDIT BUTTON */}
             <IconButton
             sx={{ color: "gray", "&:hover": { color: "blue" } }}
-            onClick={() => console.log(itemId)}
+            onClick={() => openModal("update")}
             >
               <Edit size={24}/>
             </IconButton>

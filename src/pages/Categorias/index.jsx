@@ -79,7 +79,7 @@ const CategoriasPage = () => {
             }}
           >
             {categorias?.map((item, index) => (
-              <CardCategoria key={index} title={item.nome} description={item.descricao} image={item.imagem} itemId={item.id} />
+              <CardCategoria key={index} title={item.nome} description={item.descricao} image={item.imagem} item={item} openModal={(update) => handleOpenModal(update)} />
             ))}
           </Container>
         </Container>
