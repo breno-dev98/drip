@@ -1,4 +1,4 @@
-import { Box, Container, Typography } from "@mui/material";
+import { Alert, Box, Container, Snackbar, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { categoriaServices } from "../../services/categoriaServices";
 import { useIsMobile } from "../../utils/MediaQuery";
@@ -7,30 +7,53 @@ import CardCategoria from "../../components/ui/CardCategoria";
 import ModalReutilizavel from "../../components/ui/ModalReutilizavel";
 import LoadingBackdrop from "../../components/ui/LoadingBackDrop";
 import FloatingButton from "../../components/ui/FloatingButton";
+import ConfirmDeleteModal from "../../components/ui/ConfirmDeleteModal";
 
 const CategoriasPage = () => {
-  const [categorias, setCategorias] = useState([]);
-  const [categoria, setCategoria] = useState('')
   const isMobile = useIsMobile();
+  const [categorias, setCategorias] = useState([]);
+  const [categoria, setCategoria] = useState("");
+  const [categoriaParaExcluir, setCategoriaParaExcluir] = useState(null);
   const [openModal, setOpenModal] = useState(false);
   const [modalType, setModalType] = useState("create");
-
+  const [openAlert, setOpenAlert] = useState(false);
+  const [alertSucess, setAlertSuccess] = useState(false)
+  
   const schema = z.object({
     nome: z.string().max(255, "Nome deve ter no máximo 255 caracteres.").nonempty("O campo Nome é obrigatório."),
     descricao: z.string().max(255, "Descrição deve conter no máximo 255 caracteres.").nonempty("O campo Descrição é obrigatório."),
   });
 
-  const handleEdit = async ({type, item}) => {
+  const handleEdit = async ({ type, item }) => {
     const categoria = await categoriaServices.getById(item.id);
-    setCategoria(categoria)
+    setCategoria(categoria);
     setModalType(type);
     setOpenModal(true);
   };
 
+  const handleDelete = async ({ openAlertModal, item }) => {
+    setCategoriaParaExcluir(item);
+    setOpenAlert(openAlertModal)
+  };
+
+  const confirmarExclusão = async () => {
+    if (!categoriaParaExcluir) return;
+      try {
+        await categoriaServices.delete(categoriaParaExcluir.id)
+        setCategorias((prev) => prev.filter((c) => c.id !== categoriaParaExcluir.id))
+        setOpenAlert(false)
+        setCategoriaParaExcluir(null)
+        setAlertSuccess(true)
+      } catch (error) {
+        console.error("Erro ao excluir categoria.", error);
+      }
+    
+  }
+
   const handleOpenModal = (type) => {
     setModalType(type);
     setOpenModal(true);
-  }
+  };
 
   const handleCloseModal = () => setOpenModal(false);
   const fieldsList = [
@@ -112,9 +135,23 @@ const CategoriasPage = () => {
             }}
           >
             {categorias?.map((items) => (
-              <CardCategoria key={items.id} item={items} openModal={(params) => handleEdit(params)} />
+              <CardCategoria key={items.id} item={items} openModal={(params) => handleEdit(params)} onDelete={(params) => handleDelete(params)} />
             ))}
           </Container>
+          {/* Modal de Confirmação */}
+          <ConfirmDeleteModal
+            open={openAlert}
+            onClose={() => setOpenAlert(false)}
+            itemName={categoriaParaExcluir?.nome}
+            onConfirm={confirmarExclusão}
+          />
+
+          {/* Alerta de sucesso */}
+          <Snackbar open={alertSucess} autoHideDuration={3000} onClose={() => setAlertSuccess(false)}>
+            <Alert severity="success" onClose={() => setAlertSuccess(false)}>
+              Categoria deletada com sucesso!
+            </Alert>
+          </Snackbar>
         </Container>
       )}
     </>

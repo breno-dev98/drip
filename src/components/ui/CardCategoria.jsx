@@ -6,30 +6,12 @@ import {
   CardMedia,
   IconButton,
   Typography,
-  Alert,
-  Snackbar
+
 } from "@mui/material";
 import { Edit, Trash } from "lucide-react";
-import ConfirmDeleteModal from "./ConfirmDeleteModal";
-import { categoriaServices } from "../../services/categoriaServices";
-import ModalCategoria from "./ModalCategoria";
 
-const CardCategoria = ({ item, openModal }) => {
-  const [open, setOpen] = useState(false);
-  const [alertOpen, setAlertOpen] = useState(false);
-
-  const handleDelete = async () => {
-    setOpen(false);
-    setAlertOpen(true); // Exibe o alerta
-    try {
-      await categoriaServices.delete(item.id)
-    } catch (error) {
-      console.error("Erro ao deletar a categoria");
-    }    
-  };
-
-
-  return (
+const CardCategoria = ({ item, openModal, onDelete }) => {
+    return (
     <>
       <Card
         sx={{
@@ -56,7 +38,7 @@ const CardCategoria = ({ item, openModal }) => {
             {/* DELETE BUTTON */}
             <IconButton
               sx={{ color: "gray", "&:hover": { color: "red" } }}
-              onClick={() => setOpen(true)}
+              onClick={() => onDelete({openAlertModal: true, item})}
             >
               <Trash size={24} />
             </IconButton>
@@ -81,25 +63,7 @@ const CardCategoria = ({ item, openModal }) => {
             {item.descricao}
           </Typography>
         </CardContent>
-      </Card>
-
-      {/* Modal de Categoria */}
-      <ModalCategoria visibilityButton={false}/>
-
-      {/* Modal de Confirmação */}
-      <ConfirmDeleteModal
-        open={open}
-        onClose={() => setOpen(false)}
-        itemName={item.nome}
-        onConfirm={handleDelete} 
-      />
-
-      {/* Alerta de sucesso */}
-      <Snackbar open={alertOpen} autoHideDuration={3000} onClose={() => setAlertOpen(false)}>
-        <Alert severity="success" onClose={() => setAlertOpen(false)}>
-          Categoria deletada com sucesso!
-        </Alert>
-      </Snackbar>
+      </Card>   
     </>
   );
 };
