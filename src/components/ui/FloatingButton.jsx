@@ -16,6 +16,7 @@ const FloatingButton = ({ onClick }) => {
           minWidth: "56px",
           height: "56px",
           boxShadow: 3,
+          zIndex: 10
         }}
       >
         <AddIcon />

@@ -1,11 +1,13 @@
 import { Button, Dialog, DialogActions, Divider, FormControl, TextField, Typography } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-const ModalReutilizavel = ({ type = "create", headerTitle = "Header Title Modal", headerAlign = "left", fields, open, onClose, schema }) => {
+import { useEffect } from "react";
+const ModalReutilizavel = ({ type = "create", headerTitle = "Header Title Modal", headerAlign = "left", fields, open, onClose, schema, categoria }) => {
   const {
     register,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors },
   } = useForm({ resolver: zodResolver(schema) });
   const handleClose = () => {
@@ -17,6 +19,14 @@ const ModalReutilizavel = ({ type = "create", headerTitle = "Header Title Modal"
     reset();
     onClose();
   };
+
+  useEffect(() => {
+    if (open && type === 'update') {
+      setValue("nome", categoria.nome);
+      setValue("descricao", categoria.descricao);
+    }
+  }, [open, categoria, setValue])
+
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="xs">
       <Typography variant="h5" fontWeight="bold" textTransform="uppercase" my={2} px={3.3} textAlign={headerAlign}>

@@ -10,6 +10,7 @@ import FloatingButton from "../../components/ui/FloatingButton";
 
 const CategoriasPage = () => {
   const [categorias, setCategorias] = useState([]);
+  const [categoria, setCategoria] = useState('')
   const isMobile = useIsMobile();
   const [openModal, setOpenModal] = useState(false);
   const [modalType, setModalType] = useState("create");
@@ -17,9 +18,13 @@ const CategoriasPage = () => {
     nome: z.string().max(255, "Nome deve ter no máximo 255 caracteres.").nonempty("O campo Nome é obrigatório."),
     descricao: z.string().max(255, "Descrição deve conter no máximo 255 caracteres.").nonempty("O campo Descrição é obrigatório."),
   });
-  const handleOpenModal = (type) => {
+  const handleOpenModal = async ({type, item}) => {
+    const categoria = await categoriaServices.getById(item.id);
+    console.log(categoria);
+    setCategoria(categoria)
     setModalType(type);
     setOpenModal(true);
+    
   };
 
   const handleCloseModal = () => setOpenModal(false);
@@ -63,6 +68,7 @@ const CategoriasPage = () => {
               schema={schema}
               open={openModal}
               type={modalType}
+              categoria={categoria}
               onClose={handleCloseModal}
             />
             <FloatingButton onClick={() => handleOpenModal("create")} />
@@ -78,8 +84,8 @@ const CategoriasPage = () => {
               gap: 2,
             }}
           >
-            {categorias?.map((item, index) => (
-              <CardCategoria key={index} title={item.nome} description={item.descricao} image={item.imagem} item={item} openModal={(update) => handleOpenModal(update)} />
+            {categorias?.map((items) => (
+              <CardCategoria key={items.id} item={items} openModal={(params) => handleOpenModal(params)} />
             ))}
           </Container>
         </Container>
