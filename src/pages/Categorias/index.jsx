@@ -9,6 +9,7 @@ import FloatingButton from "../../components/ui/FloatingButton";
 import ConfirmDeleteModal from "../../components/ui/ConfirmDeleteModal";
 import InputSearch from "../../components/ui/InputSearch";
 import AlertModal from "../../components/ui/AlertModal";
+import FiltroPorOrdem from "../../components/ui/FiltroPorOrdem";
 
 const CategoriasPage = () => {
   const [busca, setBusca] = useState("");
@@ -21,13 +22,17 @@ const CategoriasPage = () => {
   const [alertSucess, setAlertSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
 
-    const handleOpenModal = useCallback((type) => {
-      setModalType(type);
-      setOpenModal(true);
-    }, []);
+  const handleOpenModal = useCallback((type) => {
+    setModalType(type);
+    setOpenModal(true);
+  }, []);
 
   const handleCloseModal = useCallback(() => setOpenModal(false), []);
 
+  const ordenarPor = [
+    { nome: "Ordem crescente", value: "asc" },
+    { nome: "Ordem decrescente", value: "desc" },
+  ];
   const fieldsList = [
     { label: "Nome", name: "nome", type: "text", maxLength: 255 },
     { label: "Descrição", name: "descricao", type: "text", multiline: true, rows: 3 },
@@ -44,6 +49,8 @@ const CategoriasPage = () => {
       (cat) => cat.nome.toLowerCase().includes(busca.toLocaleLowerCase()) || cat.descricao.toLowerCase().includes(busca.toLocaleLowerCase())
     );
   }, [categorias, busca]);
+
+  
 
   const handleEdit = useCallback(async ({ type, item }) => {
     const categoria = await categoriaServices.getById(item.id);
@@ -90,24 +97,21 @@ const CategoriasPage = () => {
     }
   };
 
-    useEffect(() => {
-      const fetchCategorias = async () => {
-        try {
-          setLoading(true);
-          const data = await categoriaServices.getAll();
-          setCategorias(data);
-        } catch (error) {
-          console.error("Erro ao carregar categorias", error);
-        } finally {
-          setLoading(false);
-        }
-      };
+  useEffect(() => {
+    const fetchCategorias = async () => {
+      try {
+        setLoading(true);
+        const data = await categoriaServices.getAll();
+        setCategorias(data);
+      } catch (error) {
+        console.error("Erro ao carregar categorias", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-      fetchCategorias();
-    }, []);
-  
-  console.log('render');
-  
+    fetchCategorias();
+  }, []);
 
   return (
     <>
@@ -117,9 +121,12 @@ const CategoriasPage = () => {
         <Container maxWidth="lg" sx={{ height: "100vh" }}>
           <Box display="flex" flexDirection="column" gap={1}>
             <InputSearch value={busca} onSearch={setBusca} />
-            <Typography variant="h4" textTransform="uppercase" textAlign="center" fontWeight="bold">
-              CATEGORIAS
-            </Typography>
+            <Box display="flex" justifyContent="space-between">
+              <Typography variant="h4" textTransform="uppercase" textAlign="center" fontWeight="bold">
+                CATEGORIAS
+              </Typography>
+              <FiltroPorOrdem defaultValue={ordenarPor[0].value} items={ordenarPor} />
+            </Box>
           </Box>
 
           <Container
