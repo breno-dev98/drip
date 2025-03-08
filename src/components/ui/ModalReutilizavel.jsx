@@ -2,7 +2,17 @@ import { Button, Dialog, DialogActions, Divider, FormControl, TextField, Typogra
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
-const ModalReutilizavel = ({ type = "create", headerTitle = "Header Title Modal", headerAlign = "left", fields, open, onClose, schema, categoria, onSubmit }) => {
+const ModalReutilizavel = ({
+  type = "create",
+  headerTitle = "Header Title Modal",
+  headerAlign = "left",
+  fields,
+  open,
+  onClose,
+  schema,
+  categoria,
+  onSubmit,
+}) => {
   const {
     register,
     handleSubmit,
@@ -15,16 +25,18 @@ const ModalReutilizavel = ({ type = "create", headerTitle = "Header Title Modal"
   };
 
   useEffect(() => {
-    reset()
-  }, [onClose])
+    if (!open) {
+      reset();
+    }
+  }, [open, reset]);
 
   useEffect(() => {
-    if (open && type === 'update') {
+    if (open && type === "update") {
       setValue("nome", categoria.nome);
       setValue("descricao", categoria.descricao);
       setValue("imagem", categoria.imagem);
     }
-  }, [open, categoria, setValue])
+  }, [open, categoria, type, reset, setValue]);
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="xs">
@@ -50,6 +62,24 @@ const ModalReutilizavel = ({ type = "create", headerTitle = "Header Title Modal"
               helperText={errors[item.name]?.message}
             />
           ))}
+          {fields?.map((item, index) => {
+            item.type === "file" && (
+              <TextField
+                key={index}
+                label={item.label}
+                type={item.type}
+                name={item.name}
+                variant="outlined"
+                size="small"
+                multiline={item.multiline}
+                rows={item.rows}
+                inputProps={{ maxLength: item.maxLength }}
+                {...register(item.name)}
+                error={!!errors[item.name]}
+                helperText={errors[item.name]?.message}
+              />
+            );
+          })}
         </FormControl>
         <Divider />
         <DialogActions sx={{ my: 1 }}>
