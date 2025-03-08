@@ -1,19 +1,9 @@
 import { useForm } from "react-hook-form";
 import { useState } from "react";
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Divider,
-  TextField,
-  Stack,
-  Box,
-} from "@mui/material";
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Divider, TextField, Stack, Box } from "@mui/material";
 import { categoriaServices } from "../../services/categoriaServices"; // Importa o serviço
 
-const ModalCategoria = ({visibilityButton = true}) => {
+const ModalCategoria = ({ visibilityButton = true }) => {
   const { register, handleSubmit, setValue, reset } = useForm();
   const [open, setOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState(null);
@@ -51,9 +41,11 @@ const ModalCategoria = ({visibilityButton = true}) => {
 
   return (
     <>
-      {visibilityButton && <Button variant="contained" onClick={handleOpen}>
-        Adicionar Categoria
-      </Button>}
+      {visibilityButton && (
+        <Button variant="contained" onClick={handleOpen}>
+          Adicionar Categoria
+        </Button>
+      )}
       <Dialog open={open} onClose={handleClose} fullWidth maxWidth="xs">
         <DialogTitle fontWeight="bold" fontSize="24px" textTransform="uppercase">
           Criar Categoria
@@ -62,13 +54,7 @@ const ModalCategoria = ({visibilityButton = true}) => {
         <form onSubmit={handleSubmit(onSubmit)}>
           <DialogContent>
             <Stack spacing={2}>
-              <TextField
-                label="Nome da categoria"
-                variant="outlined"
-                size="small"
-                {...register("nome")}
-                fullWidth
-              />
+              <TextField label="Nome da categoria" variant="outlined" size="small" {...register("nome")} fullWidth />
               <TextField
                 label="Descrição"
                 variant="outlined"
@@ -86,12 +72,7 @@ const ModalCategoria = ({visibilityButton = true}) => {
               {previewImage && (
                 <Box mt={2}>
                   <p>Imagem selecionada:</p>
-                  <img
-                    src={previewImage}
-                    alt="Preview"
-                    width={100}
-                    style={{ borderRadius: "8px", marginTop: "8px" }}
-                  />
+                  <img src={previewImage} alt="Preview" width={100} style={{ borderRadius: "8px", marginTop: "8px" }} />
                 </Box>
               )}
             </Stack>

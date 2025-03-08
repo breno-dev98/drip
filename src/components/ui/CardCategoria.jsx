@@ -6,30 +6,12 @@ import {
   CardMedia,
   IconButton,
   Typography,
-  Alert,
-  Snackbar
+
 } from "@mui/material";
 import { Edit, Trash } from "lucide-react";
-import ConfirmDeleteModal from "./ConfirmDeleteModal";
-import { categoriaServices } from "../../services/categoriaServices";
-import ModalCategoria from "./ModalCategoria";
 
-const CardCategoria = ({ title, description, image, itemId }) => {
-  const [open, setOpen] = useState(false);
-  const [alertOpen, setAlertOpen] = useState(false);
-
-  const handleDelete = async () => {
-    setOpen(false);
-    setAlertOpen(true); // Exibe o alerta
-    try {
-      await categoriaServices.delete(itemId)
-    } catch (error) {
-      console.error("Erro ao deletar a categoria");
-    }    
-  };
-
-
-  return (
+const CardCategoria = ({ item, openModal, onDelete }) => {
+    return (
     <>
       <Card
         sx={{
@@ -49,14 +31,14 @@ const CardCategoria = ({ title, description, image, itemId }) => {
             {/* EDIT BUTTON */}
             <IconButton
             sx={{ color: "gray", "&:hover": { color: "blue" } }}
-            onClick={() => console.log(itemId)}
+            onClick={() => openModal({type: "update", item})}
             >
               <Edit size={24}/>
             </IconButton>
             {/* DELETE BUTTON */}
             <IconButton
               sx={{ color: "gray", "&:hover": { color: "red" } }}
-              onClick={() => setOpen(true)}
+              onClick={() => onDelete({openAlertModal: true, item})}
             >
               <Trash size={24} />
             </IconButton>
@@ -64,8 +46,8 @@ const CardCategoria = ({ title, description, image, itemId }) => {
           </Box>
           <CardMedia
             component="img"
-            image={image}
-            alt={title}
+            image={item.imagem}
+            alt={item.nome}
             sx={{
               width: "100px",
               height: "100px",
@@ -74,32 +56,14 @@ const CardCategoria = ({ title, description, image, itemId }) => {
               margin: "0 auto",
             }}
           />
-          <Typography variant="h5" sx={{ textAlign: "center" }} fontWeight="bold" title={title}>
-            {title}
+          <Typography variant="h5" sx={{ textAlign: "center" }} fontWeight="bold" title={item.nome}>
+            {item.nome}
           </Typography>
-          <Typography variant="subtitle1" color="textSecondary" title={description} sx={{ textAlign: "center" }}>
-            {description}
+          <Typography variant="subtitle1" color="textSecondary" title={item.descricao} sx={{ textAlign: "center" }}>
+            {item.descricao}
           </Typography>
         </CardContent>
-      </Card>
-
-      {/* Modal de Categoria */}
-      <ModalCategoria visibilityButton={false}/>
-
-      {/* Modal de Confirmação */}
-      <ConfirmDeleteModal
-        open={open}
-        onClose={() => setOpen(false)}
-        itemName={title}
-        onConfirm={handleDelete} // Agora ele chama corretamente
-      />
-
-      {/* Alerta de sucesso */}
-      <Snackbar open={alertOpen} autoHideDuration={3000} onClose={() => setAlertOpen(false)}>
-        <Alert severity="success" onClose={() => setAlertOpen(false)}>
-          Categoria deletada com sucesso!
-        </Alert>
-      </Snackbar>
+      </Card>   
     </>
   );
 };
