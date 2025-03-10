@@ -4,6 +4,7 @@ import Layout from './components/layout/Layout'
 import CategoriasPage from './pages/Categorias'
 import HomePage from './pages/Home'
 import MarcasPage from './pages/Marcas'
+import CadastroPage from './pages/CadastroPage'
 
 function App() {
 
@@ -14,6 +15,7 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/categorias" element={<CategoriasPage />} />
         <Route path="/marcas" element={<MarcasPage />} />
+        <Route path="/cadastro" element={<CadastroPage />} />
       </Route>
      </Routes>
     </BrowserRouter>
