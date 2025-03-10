@@ -15,7 +15,7 @@ const schema = z.object({
   email: z.string().min(1, "Email é obrigatório").email("E-mail inválido"),
   senha: z.string().min(6, "A senha deve ter no mínimo 6 caracteres"),
   telefone: z.string().min(11, "O telefone deve ter no mínimo 11 digitos"),
-  cpf: z.string().min(11, "O CPF deve ter 11 digitos"),
+  cpf: z.string().nonempty("CPF é obrigatório").min(11, "O CPF deve ter 11 digitos")
 });
 
 export default function CadastroForm() {
@@ -33,9 +33,14 @@ export default function CadastroForm() {
   });
 
   const onSubmit = (data) => {
-    console.log("Dados enviados:", data);
-    reset();
-    alertSuccess();
+    try {
+        console.log("Dados enviados:", data);
+        reset();
+        alertSuccess();
+    } catch (error) {
+        console.error("Erro ao cadastrar usuario.");
+        alertError()
+    }
   };
 
   const alertSuccess = () => {
@@ -45,6 +50,18 @@ export default function CadastroForm() {
       icon: "success",
       confirmButtonText: "Ok",
       confirmButtonColor: "green",
+      timer: 3000,
+      timerProgressBar: true,
+      allowOutsideClick: false,
+    });
+  };
+  const alertError = () => {
+    Swal.fire({
+      title: "Erro!",
+      text: "Falha ao cadastrar usuário!",
+      icon: "error",
+      confirmButtonText: "Ok",
+      confirmButtonColor: "red",
       timer: 3000,
       timerProgressBar: true,
       allowOutsideClick: false,
@@ -66,7 +83,6 @@ export default function CadastroForm() {
             {...register("nome")}
             error={!!errors.nome}
             helperText={errors.nome?.message}
-            required
           />
           <TextField
             label="E-mail"
@@ -76,7 +92,6 @@ export default function CadastroForm() {
             {...register("email")}
             error={!!errors.email}
             helperText={errors.email?.message}
-            required
           />
           <Box position="relative">
             <TextField
@@ -88,7 +103,7 @@ export default function CadastroForm() {
               {...register("senha")}
               error={!!errors.senha}
               helperText={errors.senha?.message}
-              required
+
               InputProps={{
                 endAdornment: (
                   <IconButton
@@ -119,7 +134,6 @@ export default function CadastroForm() {
             error={!!errors.telefone}
             helperText={errors.telefone?.message}
             inputProps={{ maxLength: 15 }}
-            required
           />
           <TextField
             label="CPF"
@@ -132,7 +146,6 @@ export default function CadastroForm() {
             error={!!errors.cpf}
             helperText={errors.cpf?.message}
             inputProps={{ maxLength: 15 }}
-            required
           />
           <Button type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2 }}>
             Cadastrar
