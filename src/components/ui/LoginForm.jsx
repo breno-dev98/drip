@@ -8,6 +8,7 @@ import { TextField, Button, Container, Typography, Box, Divider, IconButton } fr
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { loginService } from "../../services/loginService";
 
 // Esquema de validação com Zod
 const schema = z.object({
@@ -30,9 +31,9 @@ export default function LoginForm() {
     resolver: zodResolver(schema),
   });
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     try {
-        console.log("Dados enviados:", data);
+      await loginService(data)
         reset();
         alertSuccess();
     } catch (error) {
