@@ -1,25 +1,14 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { useState } from 'react'
 import './App.css'
-import Layout from './components/layout/Layout'
-import CategoriasPage from './pages/Categorias'
-import HomePage from './pages/Home'
-import MarcasPage from './pages/Marcas'
-import CadastroPage from './pages/CadastroPage'
+import PrivateRoutes from './routes/private.routes'
+import PublicRoutes from './routes/public.routes'
+
 
 function App() {
-
-  return (
-    <BrowserRouter>
-     <Routes>
-      <Route path="" element={<Layout />}>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/categorias" element={<CategoriasPage />} />
-        <Route path="/marcas" element={<MarcasPage />} />
-        <Route path="/cadastro" element={<CadastroPage />} />
-      </Route>
-     </Routes>
-    </BrowserRouter>
-  )
+  const [auth, setAuth] = useState(false)
+  return auth ? <PrivateRoutes /> : <PublicRoutes />
+    
+  
 }
 
 export default App
