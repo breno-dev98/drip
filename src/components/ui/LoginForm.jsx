@@ -24,7 +24,7 @@ export default function LoginForm() {
     setShowPassword((prev) => !prev);
   };
 
-  const { auth, setAuth } = useContext(AuthContext);
+  const { login } = useContext(AuthContext);
   const navigate = useNavigate();
   const {
     register,
@@ -40,7 +40,6 @@ export default function LoginForm() {
       await loginService(data);
       reset();
       await alertSuccess()
-      setAuth(true)
       navigate("/");
         
     } catch (error) {
