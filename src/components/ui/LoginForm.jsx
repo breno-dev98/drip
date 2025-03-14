@@ -5,23 +5,27 @@ import { FcGoogle } from "react-icons/fc";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import { z } from "zod";
 import { TextField, Button, Container, Typography, Box, Divider, IconButton } from "@mui/material";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { loginService } from "../../services/loginService";
+import { useContext } from "react";
+import { AuthContext } from "../../context/AuthContext";
 
 // Esquema de validação com Zod
 const schema = z.object({
   email: z.string().min(1, "Email é obrigatório").email("E-mail inválido"),
   senha: z.string().min(6, "A senha deve ter no mínimo 6 caracteres"),
-
 });
 
 export default function LoginForm() {
-    const [showPassword, setShowPassword] = useState(false)
-    const handleTogglePassword = () => {
-        setShowPassword((prev) => !prev)
-    }
+  const [showPassword, setShowPassword] = useState(false);
+  const handleTogglePassword = () => {
+    setShowPassword((prev) => !prev);
+  };
+
+  const { auth, setAuth } = useContext(AuthContext);
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -33,19 +37,22 @@ export default function LoginForm() {
 
   const onSubmit = async (data) => {
     try {
-      await loginService(data)
-        reset();
-        alertSuccess();
+      await loginService(data);
+      reset();
+      await alertSuccess()
+      setAuth(true)
+      navigate("/");
+        
     } catch (error) {
-        console.error("Erro ao cadastrar usuario.");
-        alertError()
+      console.error("Erro ao fazer login.");
+      alertError();
     }
   };
 
-  const alertSuccess = () => {
-    Swal.fire({
+  const alertSuccess = async () => {
+    await Swal.fire({
       title: "Sucesso!",
-      text: "Logado com sucesso!",
+      text: "Logado com sucesso! Você será redirecionado.",
       icon: "success",
       confirmButtonText: "Ok",
       confirmButtonColor: "green",
@@ -53,9 +60,11 @@ export default function LoginForm() {
       timerProgressBar: true,
       allowOutsideClick: false,
     });
+    
   };
+
   const alertError = () => {
-    Swal.fire({
+     Swal.fire({
       title: "Erro!",
       text: "Falha ao realizar login!",
       icon: "error",
@@ -93,7 +102,6 @@ export default function LoginForm() {
               {...register("senha")}
               error={!!errors.senha}
               helperText={errors.senha?.message}
-
               InputProps={{
                 endAdornment: (
                   <IconButton
@@ -117,7 +125,9 @@ export default function LoginForm() {
           </Button>
           <Box component="span" display="flex" justifyContent="center" my={2} gap={1}>
             Ainda não tem uma conta?
-            <Link to='/cadastro' style={{textDecoration: 'none', color: 'blue'}}>Cadastre-se</Link>
+            <Link to="/cadastro" style={{ textDecoration: "none", color: "blue" }}>
+              Cadastre-se
+            </Link>
           </Box>
 
           <Divider>ou</Divider>
