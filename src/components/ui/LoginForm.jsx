@@ -37,11 +37,11 @@ export default function LoginForm() {
 
   const onSubmit = async (data) => {
     try {
-      await loginService(data);
+      const response = await loginService(data); // Chama o loginService para obter o token
       reset();
-      await alertSuccess()
-      navigate("/");
-        
+      await alertSuccess();
+      login(response.token); // Chama a função login do AuthContext para armazenar o token e atualizar o estado
+      navigate("/"); // Redireciona para a página inicial
     } catch (error) {
       console.error("Erro ao fazer login.");
       alertError();
@@ -79,7 +79,7 @@ export default function LoginForm() {
     <Container maxWidth="sm">
       <Box sx={{ mt: 4, p: 3, boxShadow: 3, borderRadius: 2, bgcolor: "background.paper", minWidth: "200px", maxWidth: "500px" }}>
         <Typography variant="h5" align="center" gutterBottom>
-          Registrar-se
+          Entrar
         </Typography>
         <form onSubmit={handleSubmit(onSubmit)}>
           <TextField

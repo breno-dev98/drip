@@ -4,6 +4,7 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
+import LogoutIcon from "@mui/icons-material/Logout";
 import { useIsMobile } from "../../utils/MediaQuery";
 import { Button, Container, Divider, Drawer, List, ListItem, ListItemButton, ListItemIcon } from "@mui/material";
 import { Link } from "react-router-dom";
@@ -60,6 +61,14 @@ export default function Header() {
                         </Link>
                       </ListItemButton>
                     ))}
+                    <ListItemButton>
+                      <ListItemIcon>
+                        <LogoutIcon />
+                      </ListItemIcon>
+                        <Typography variant="h6" color="textPrimary" fontWeight="bold" textTransform="uppercase">
+                          Sair
+                        </Typography>
+                    </ListItemButton>
                   </List>
                 </Box>
               </Drawer>
@@ -80,7 +89,7 @@ export default function Header() {
               </List>
             )}
             <Button onClick={() => logout()} variant="text" color="white">
-              Logout
+              <LogoutIcon /> Logout
             </Button>
           </Toolbar>
         </Container>

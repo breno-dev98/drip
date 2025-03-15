@@ -3,20 +3,21 @@ import { createContext, useEffect, useState } from "react";
 export const AuthContext = createContext();
 
 function AuthProvider({ children }) {
+
   const [auth, setAuth] = useState({
     isAuthenticated: false,
-    token: null
+    token: null,
   });
 
   useEffect(() => {
-    const token = localStorage.getItem("token")
+    const token = localStorage.getItem("token");
     if (token) {
       setAuth({
         isAuthenticated: true,
-        token: token
-      })
+        token: token,
+      });
     }
-  }, [])
+  }, []);
 
   const login = (token) => {
     localStorage.setItem("token", token); // Armazena o token no localStorage
@@ -33,11 +34,8 @@ function AuthProvider({ children }) {
       token: null,
     });
   };
-    return (
-    <AuthContext.Provider value={{auth, login, logout}}>
-        {children}
-    </AuthContext.Provider>
-    )
+
+  return <AuthContext.Provider value={{ auth, login, logout }}>{children}</AuthContext.Provider>;
 }
 
 export default AuthProvider;

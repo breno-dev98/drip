@@ -105,8 +105,7 @@ const CategoriasPage = () => {
 
       fetchCategorias();
     }, []);
-  
-  console.log('render');
+
   
 
   return (

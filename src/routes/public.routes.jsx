@@ -1,18 +1,11 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
-import CadastroPage from "../pages/CadastroPage"
-import LoginPage from "../pages/LoginPage";
+import { Navigate, Outlet } from "react-router-dom";
+import { useContext } from "react";
+import { AuthContext } from "../context/AuthContext";
 
 const PublicRoutes = () => {
-    return (
-      <BrowserRouter>
-        <Routes>
-          <Route path="/cadastro" element={<CadastroPage />} />
-          <Route path="/entrar" element={<LoginPage />} />
+  const { auth } = useContext(AuthContext);
 
-          <Route path="*" element={<Navigate to="/entrar" replace />} />
-        </Routes>
-      </BrowserRouter>
-    );
-}
+  return auth.isAuthenticated ? <Navigate to="/" replace /> : <Outlet />;
+};
 
 export default PublicRoutes;
