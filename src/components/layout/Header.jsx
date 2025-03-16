@@ -4,12 +4,11 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
-import LogoutIcon from "@mui/icons-material/Logout";
 import { useIsMobile } from "../../utils/MediaQuery";
 import { Button, Container, Divider, Drawer, List, ListItem, ListItemButton, ListItemIcon } from "@mui/material";
 import { Link } from "react-router-dom";
 import { useContext, useState } from "react";
-import { House, LayoutGrid, Tags } from "lucide-react";
+import { House, LayoutGrid, Tags, CircleUserRound, LogOut } from "lucide-react";
 import { AuthContext } from "../../context/AuthContext";
 
 export default function Header() {
@@ -43,7 +42,7 @@ export default function Header() {
             {/* MENU MOBILE */}
             {isMobile && (
               <Drawer open={open} onClose={toggleDrawer(false)}>
-                <Box sx={{ width: 250 }} role="menu">
+                <Box sx={{ width: 250, height: "100%" }} role="menu" display="flex" flexDirection="column" justifyContent="space-between">
                   <List>
                     <ListItem>
                       <Typography variant="h5" fontWeight="bold" textTransform="uppercase">
@@ -61,15 +60,27 @@ export default function Header() {
                         </Link>
                       </ListItemButton>
                     ))}
+                  </List>
+                  <Box sx={{ mt: "auto"}}>
+                    {" "}
+                    {/* mt: "auto" empurra o botão para baixo */}
                     <ListItemButton>
                       <ListItemIcon>
-                        <LogoutIcon />
+                        <CircleUserRound size={24} />
                       </ListItemIcon>
-                        <Typography variant="h6" color="textPrimary" fontWeight="bold" textTransform="uppercase">
-                          Sair
-                        </Typography>
+                      <Typography variant="h6" color="textPrimary" fontWeight="bold" textTransform="uppercase">
+                        Perfil
+                      </Typography>
                     </ListItemButton>
-                  </List>
+                    <ListItemButton onClick={() => logout()}>
+                      <ListItemIcon>
+                        <LogOut size={24} />
+                      </ListItemIcon>
+                      <Typography variant="h6" color="textPrimary" fontWeight="bold" textTransform="uppercase">
+                        Sair
+                      </Typography>
+                    </ListItemButton>
+                  </Box>
                 </Box>
               </Drawer>
             )}
@@ -88,8 +99,8 @@ export default function Header() {
                 ))}
               </List>
             )}
-            <Button onClick={() => logout()} variant="text" color="white">
-              <LogoutIcon /> Logout
+            <Button onClick={() => logout()} title="Sair" variant="text" color="white">
+              <LogOut />
             </Button>
           </Toolbar>
         </Container>
