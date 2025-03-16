@@ -5,9 +5,11 @@ import { FcGoogle } from "react-icons/fc";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import { z } from "zod";
 import { TextField, Button, Container, Typography, Box, Divider, IconButton } from "@mui/material";
-import { Link } from "react-router-dom";
-import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useContext, useState } from "react";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { usuarioServices } from "../../services/usuarioServices";
+import { AuthContext } from "../../context/AuthContext";
 
 // Esquema de validação com Zod
 const schema = z.object({
@@ -19,7 +21,10 @@ const schema = z.object({
 });
 
 export default function CadastroForm() {
-    const [showPassword, setShowPassword] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
+  const navigate = useNavigate()
+    const { cadastro } = useContext(AuthContext);
+  
     const handleTogglePassword = () => {
         setShowPassword((prev) => !prev)
     }
@@ -32,19 +37,22 @@ export default function CadastroForm() {
     resolver: zodResolver(schema),
   });
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     try {
+        const response = await usuarioServices.create(data);
         console.log("Dados enviados:", data);
         reset();
-        alertSuccess();
+      await alertSuccess();
+      cadastro(response.token)
+        navigate("/")
     } catch (error) {
         console.error("Erro ao cadastrar usuario.");
         alertError()
     }
   };
 
-  const alertSuccess = () => {
-    Swal.fire({
+  const alertSuccess = async () => {
+    await Swal.fire({
       title: "Sucesso!",
       text: "Usuário cadastrado com sucesso!",
       icon: "success",
@@ -55,8 +63,8 @@ export default function CadastroForm() {
       allowOutsideClick: false,
     });
   };
-  const alertError = () => {
-    Swal.fire({
+  const alertError = async () => {
+    await Swal.fire({
       title: "Erro!",
       text: "Falha ao cadastrar usuário!",
       icon: "error",

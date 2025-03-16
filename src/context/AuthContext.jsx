@@ -27,6 +27,14 @@ function AuthProvider({ children }) {
     });
   };
 
+  const cadastro = (token) => {
+    localStorage.setItem("token", token); // Armazena o token no localStorage
+    setAuth({
+      isAuthenticated: true,
+      token: token,
+    });
+  };
+
   const logout = () => {
     localStorage.removeItem("token"); // Remove o token do localStorage
     setAuth({
@@ -35,7 +43,7 @@ function AuthProvider({ children }) {
     });
   };
 
-  return <AuthContext.Provider value={{ auth, login, logout }}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={{ auth, login, cadastro, logout }}>{children}</AuthContext.Provider>;
 }
 
 export default AuthProvider;
