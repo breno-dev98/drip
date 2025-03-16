@@ -61,7 +61,7 @@ export default function Header() {
                       </ListItemButton>
                     ))}
                   </List>
-                  <Box sx={{ mt: "auto"}}>
+                  <Box sx={{ mt: "auto" }}>
                     {" "}
                     {/* mt: "auto" empurra o botão para baixo */}
                     <ListItemButton>
@@ -99,6 +99,10 @@ export default function Header() {
                 ))}
               </List>
             )}
+            <Button>
+              <Typography variant="subtitle1" color="white" >Olá, </Typography>
+              <CircleUserRound />
+            </Button>
             <Button onClick={() => logout()} title="Sair" variant="text" color="white">
               <LogOut />
             </Button>

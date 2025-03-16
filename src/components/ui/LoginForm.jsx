@@ -38,6 +38,7 @@ export default function LoginForm() {
   const onSubmit = async (data) => {
     try {
       const response = await loginService(data); // Chama o loginService para obter o token
+      console.log(response);
       reset();
       await alertSuccess();
       login(response.token); // Chama a função login do AuthContext para armazenar o token e atualizar o estado
