@@ -1,5 +1,4 @@
 import { api } from "../api";
-
 export const loginService = async (data) => {
     try {
         const response = await api.post("/login", data);

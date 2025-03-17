@@ -5,18 +5,28 @@ import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import { useIsMobile } from "../../utils/MediaQuery";
-import { Button, Container, Divider, Drawer, List, ListItem, ListItemButton, ListItemIcon } from "@mui/material";
+import { Avatar, Button, Container, Divider, Drawer, List, ListItem, ListItemButton, ListItemIcon, Menu, MenuItem, MenuList } from "@mui/material";
 import { Link } from "react-router-dom";
-import { useContext, useState } from "react";
-import { House, LayoutGrid, Tags, CircleUserRound, LogOut } from "lucide-react";
+import { useContext, useEffect, useState } from "react";
+import { House, LayoutGrid, Tags, CircleUserRound, LogOut, Settings } from "lucide-react";
 import { AuthContext } from "../../context/AuthContext";
+import { jwtDecode } from "jwt-decode";
 
 export default function Header() {
   const [open, setOpen] = useState(false);
+  const [nomeUsuario, setNomeUsuario] = useState("");
+  const [perfilAnchorEl, setPerfilAnchorEl] = useState(null);
+  const perfilOpen = Boolean(perfilAnchorEl);
+
+  const handlePerfilOpen = (event) => {
+    setPerfilAnchorEl(event.currentTarget);
+  };
+  const handlePerfilClose = () => {
+    setPerfilAnchorEl(null);
+  };
   const toggleDrawer = (newOpen) => () => {
     setOpen(newOpen);
   };
-
   const { logout } = useContext(AuthContext);
   const isMobile = useIsMobile();
   const pagesLinks = [
@@ -24,6 +34,15 @@ export default function Header() {
     { to: "/categorias", label: "Categorias", icon: <LayoutGrid size={24} /> },
     { to: "/marcas", label: "Marcas", icon: <Tags size={24} /> },
   ];
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if (token) {
+      // Decodifica o token para pegar o nome do usuário
+      const usuario = jwtDecode(token);
+      setNomeUsuario(usuario.nome);
+    }
+  }, []);
   return (
     <Box>
       <AppBar position="fixed">
@@ -87,25 +106,56 @@ export default function Header() {
 
             {/* MENU DESKTOP */}
             {!isMobile && (
-              <List sx={{ display: "flex" }}>
-                {pagesLinks.map((item, index) => (
-                  <ListItem key={index}>
-                    <Link to={item.to} style={{ textDecoration: "none" }}>
-                      <Typography variant="h6" color="white">
-                        {item.label}
-                      </Typography>
-                    </Link>
-                  </ListItem>
-                ))}
-              </List>
+              <>
+                <List sx={{ display: "flex" }}>
+                  {pagesLinks.map((item, index) => (
+                    <ListItem key={index}>
+                      <Link to={item.to} style={{ textDecoration: "none" }}>
+                        <Typography variant="h6" color="white">
+                          {item.label}
+                        </Typography>
+                      </Link>
+                    </ListItem>
+                  ))}
+                </List>
+                <Box display="flex" alignItems="center" gap={1} marginRight={2}>
+                  <Typography component="span" variant="body1" color="white">
+                    Olá,
+                  </Typography>
+                  <Typography component="span" variant="subtitle1" color="white" fontWeight="bold">
+                    {nomeUsuario.split(" ")[0]}
+                  </Typography>
+                </Box>
+                <Box>
+                  <Button onClick={handlePerfilOpen} title="Menu">
+                    <Avatar sx={{width: "30px", height: "30px"}}>{nomeUsuario.split(" ")[0][0]}</Avatar>
+                  </Button>
+                  <Menu
+                    open={perfilOpen}
+                    anchorEl={perfilAnchorEl}
+                    onClose={handlePerfilClose}
+                    anchorOrigin={{ vertical: "bottom", horizontal: "right" }} // Posição em relação ao ícone
+                    transformOrigin={{ vertical: "top", horizontal: "right" }}
+                  >
+                    <MenuList>
+                      <MenuItem sx={{ display: "flex", gap: 2 }} title="Perfil">
+                        <CircleUserRound /> Perfil
+                      </MenuItem>
+                      <MenuItem sx={{ display: "flex", gap: 2 }} title="Minha Conta">
+                        <CircleUserRound /> Minha Conta
+                      </MenuItem>
+                      <Divider />
+                      <MenuItem sx={{ display: "flex", gap: 2 }} title="Configurações">
+                        <Settings /> Configurações
+                      </MenuItem>
+                      <MenuItem sx={{ display: "flex", gap: 2 }} onClick={() => logout()} title="Sair">
+                        <LogOut /> Sair
+                      </MenuItem>
+                    </MenuList>
+                  </Menu>
+                </Box>
+              </>
             )}
-            <Button>
-              <Typography variant="subtitle1" color="white" >Olá, </Typography>
-              <CircleUserRound />
-            </Button>
-            <Button onClick={() => logout()} title="Sair" variant="text" color="white">
-              <LogOut />
-            </Button>
           </Toolbar>
         </Container>
       </AppBar>
