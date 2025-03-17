@@ -104,9 +104,10 @@ export default function Header() {
               </Drawer>
             )}
 
-            {/* MENU DESKTOP */}
+            {/* NAVBAR DESKTOP */}
             {!isMobile && (
               <>
+                {/* NAVLINKS */}
                 <List sx={{ display: "flex" }}>
                   {pagesLinks.map((item, index) => (
                     <ListItem key={index}>
@@ -118,6 +119,8 @@ export default function Header() {
                     </ListItem>
                   ))}
                 </List>
+
+                {/* BOAS VINDAS */}
                 <Box display="flex" alignItems="center" gap={1} marginRight={2}>
                   <Typography component="span" variant="body1" color="white">
                     Olá,
@@ -126,6 +129,8 @@ export default function Header() {
                     {nomeUsuario.split(" ")[0]}
                   </Typography>
                 </Box>
+
+                {/* MENU DESKTOP */}
                 <Box>
                   <Button onClick={handlePerfilOpen} title="Menu">
                     <Avatar sx={{width: "30px", height: "30px"}}>{nomeUsuario.split(" ")[0][0]}</Avatar>
