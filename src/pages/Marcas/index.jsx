@@ -1,11 +1,30 @@
-import { Box, Container, IconButton, Input, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from "@mui/material";
+import { Container, IconButton, Input, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from "@mui/material";
 import { marcasServices } from "../../services/marcasServices";
 import { useEffect, useState } from "react";
 import { Check, Edit, Trash, X } from "lucide-react";
+import Swal from "sweetalert2";
 const MarcasPage = () => {
   const [marcas, setMarcas] = useState([]);
   const [isEditMode, setIsEditMode] = useState(null);
   const [editedNome, setEditedNome] = useState("");
+
+  const ConfirmDelete = async (marca) => {
+    await Swal.fire({
+      title: "Atenção",
+      html: `Tem certeza que deseja exlcuir a marca <strong>${marca.nome}</strong>?`,
+      showCancelButton: true,
+      cancelButtonText: "Cancelar",
+      closeButtonColor: "black",
+      confirmButtonText: "Excluir",
+      confirmButtonColor: "red",
+    });
+  };
+
+  const handleDeleteMarca = async (marca) => {
+    await ConfirmDelete(marca);
+    await marcasServices.delete(marca.id)
+    alert("confirmado");
+  };
 
   useEffect(() => {
     const fetchMarcas = async () => {
@@ -88,7 +107,7 @@ const MarcasPage = () => {
                       </IconButton>
                     )}
                     <IconButton>
-                      <Trash style={{ color: "red" }} onClick={() => alert(item.id)} />
+                      <Trash style={{ color: "red" }} onClick={() => handleDeleteMarca(item)} />
                     </IconButton>
                   </TableCell>
                 </TableRow>
