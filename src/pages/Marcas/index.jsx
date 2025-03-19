@@ -29,6 +29,16 @@ const MarcasPage = () => {
     setEditedNome("");
   };
 
+  const handleEditSave = async (item) => {
+    try {
+      await marcasServices.update(item.id, { nome: editedNome });
+      setMarcas((prev) => prev.map((marca) => (marca.id === item.id ? { ...marca, nome: editedNome } : marca)));
+      handleEditOff();
+    } catch (error) {
+      console.error("Erro ao salvar edição", error);
+    }
+  };
+
   return (
     <Container maxWidth="lg">
       <h1>MARCAS</h1>
@@ -47,26 +57,26 @@ const MarcasPage = () => {
                 <TableRow key={item.id}>
                   <TableCell sx={{ fontWeight: "bold", fontSize: "15px" }}>{index + 1}</TableCell>
                   <TableCell sx={{ fontSize: "15px" }}>
-                      {isEditMode === item.id ? (
-                        <TextField
-                          sx={{ width: "auto", minWidth: "200px", maxWidth: "300px" }}
-                          type="text"
-                          autoComplete="off"
-                          size="small"
-                          name="nome"
-                          placeholder="Nome"
-                          value={editedNome}
-                          onChange={handleChangeNome}
-                        />
-                          ) : (
-                                  item.nome
-                      )}
+                    {isEditMode === item.id ? (
+                      <TextField
+                        sx={{ width: "auto", minWidth: "200px", maxWidth: "300px" }}
+                        type="text"
+                        autoComplete="off"
+                        size="small"
+                        name="nome"
+                        placeholder="Nome"
+                        value={editedNome}
+                        onChange={handleChangeNome}
+                      />
+                    ) : (
+                      item.nome
+                    )}
                   </TableCell>
                   <TableCell sx={{ fontSize: "15px" }}>
                     {isEditMode === item.id ? (
                       <>
                         <IconButton title="Salvar">
-                          <Check color="green" />
+                          <Check color="green" onClick={() => handleEditSave(item)} />
                         </IconButton>
                         <IconButton title="Cancelar">
                           <X color="red" onClick={() => handleEditOff()} />
