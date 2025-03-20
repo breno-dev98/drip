@@ -1,4 +1,4 @@
-import { Container, IconButton, Input, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from "@mui/material";
+import { Box, Button, Container, IconButton, Input, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from "@mui/material";
 import { marcasServices } from "../../services/marcasServices";
 import { useEffect, useState } from "react";
 import { Check, Edit, Trash, X } from "lucide-react";
@@ -60,9 +60,12 @@ const MarcasPage = () => {
 
   return (
     <Container maxWidth="lg">
-      <h1>MARCAS</h1>
+      <Box display='flex' justifyContent='space-between'>
+        <h1>MARCAS</h1>
+        <Button variant="contained" color="primary">Adicionar Marca</Button>
+      </Box>
       <TableContainer>
-        {marcas.length > 0 && (
+        {marcas.length > 0 ? (
           <Table>
             <TableHead>
               <TableRow>
@@ -98,15 +101,15 @@ const MarcasPage = () => {
                           <Check color="green" onClick={() => handleEditSave(item)} />
                         </IconButton>
                         <IconButton title="Cancelar">
-                          <X color="red" onClick={() => handleEditOff()} />
+                          <X color="gray" onClick={() => handleEditOff()} />
                         </IconButton>
                       </>
                     ) : (
-                      <IconButton>
+                      <IconButton title="Editar">
                         <Edit onClick={() => handleEditOn(item)} />
                       </IconButton>
                     )}
-                    <IconButton>
+                    <IconButton title="Excluir">
                       <Trash style={{ color: "red" }} onClick={() => handleDeleteMarca(item)} />
                     </IconButton>
                   </TableCell>
@@ -114,6 +117,12 @@ const MarcasPage = () => {
               ))}
             </TableBody>
           </Table>
+        ) : (
+            <Box display='flex' justifyContent='center' alignItems='center' height='100vh'>
+              <Typography variant="h6">
+                Nenhuma marca existente
+              </Typography>
+            </Box>
         )}
       </TableContainer>
     </Container>
