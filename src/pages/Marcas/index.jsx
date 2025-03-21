@@ -9,7 +9,7 @@ const MarcasPage = () => {
   const [editedNome, setEditedNome] = useState("");
 
   const ConfirmDelete = async (marca) => {
-    await Swal.fire({
+    const result = await Swal.fire({
       title: "Atenção",
       html: `Tem certeza que deseja exlcuir a marca <strong>${marca.nome}</strong>?`,
       showCancelButton: true,
@@ -18,12 +18,18 @@ const MarcasPage = () => {
       confirmButtonText: "Excluir",
       confirmButtonColor: "red",
     });
+    return result.isConfirmed;
   };
 
   const handleDeleteMarca = async (marca) => {
-    await ConfirmDelete(marca);
-    await marcasServices.delete(marca.id)
-    alert("confirmado");
+   const isConfirmed =  await ConfirmDelete(marca);
+    if (isConfirmed) {
+      await marcasServices.delete(marca.id);
+      setMarcas((prev) => prev.filter((item) => item.id !== marca.id))
+      alert("Marca excluída com sucesso!");
+    } else {
+      alert("Exclusão cancelada")
+   }
   };
 
   useEffect(() => {
