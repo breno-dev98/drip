@@ -1,4 +1,17 @@
-import { Box, Button, Container, IconButton, Input, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Container,
+  IconButton,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TextField,
+} from "@mui/material";
+import AlertModal from "../../components/ui/AlertModal";
 import { marcasServices } from "../../services/marcasServices";
 import { useEffect, useState } from "react";
 import { Check, Edit, Trash, X } from "lucide-react";
@@ -6,15 +19,20 @@ import Swal from "sweetalert2";
 const MarcasPage = () => {
   const [marcas, setMarcas] = useState([]);
   const [isEditMode, setIsEditMode] = useState(null);
+  const [isCreateMode, setIsCreateMode] = useState(false);
   const [editedNome, setEditedNome] = useState("");
+  const [openConfirm, setOpenConfirm] = useState(false)
+  const [formData, setFormData] = useState({
+    nome: "",
+  });
+  const [errors, setErros] = useState(null)
 
   const ConfirmDelete = async (marca) => {
-    const result = await Swal.fire({
+    return Swal.fire({
       title: "Atenção",
       html: `Tem certeza que deseja exlcuir a marca <strong>${marca.nome}</strong>?`,
       showCancelButton: true,
       cancelButtonText: "Cancelar",
-      closeButtonColor: "black",
       confirmButtonText: "Excluir",
       confirmButtonColor: "red",
     });
@@ -22,14 +40,12 @@ const MarcasPage = () => {
   };
 
   const handleDeleteMarca = async (marca) => {
-   const isConfirmed =  await ConfirmDelete(marca);
-    if (isConfirmed) {
+    const result = await ConfirmDelete(marca);
+    if (result.isConfirmed) {
       await marcasServices.delete(marca.id);
-      setMarcas((prev) => prev.filter((item) => item.id !== marca.id))
-      alert("Marca excluída com sucesso!");
-    } else {
-      alert("Exclusão cancelada")
-   }
+      alert("confirmado");
+      setMarcas((...prev) => prev)
+    }
   };
 
   useEffect(() => {
@@ -64,12 +80,70 @@ const MarcasPage = () => {
     }
   };
 
+  const handleChangeCreateNome = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+    if (errors !== null) {
+      setErros(null);
+    }
+  };
+
+  useEffect(() => {
+    if (isCreateMode === false) {
+      setFormData({nome: ""})
+      setErros(null)
+    }
+  }, [isCreateMode])
+
+  const handleCreateSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      if (formData.nome.trim() !== "") {
+        await marcasServices.create(formData);
+        setFormData({ nome: "" });
+        setOpenConfirm(true)
+        setMarcas((...prev) => prev);
+      } else {
+        setErros("O nome é obrigatório");
+      }
+    } catch (error) {
+      if (error.response.data.error.includes("existe")) {
+        setErros("A Marca já existe")
+      }
+      console.error("Erro ao criar marca", error)
+    }
+  };
+
   return (
     <Container maxWidth="lg">
-      <Box display='flex' justifyContent='space-between'>
+      <Box display="flex" justifyContent="space-between">
         <h1>MARCAS</h1>
-        <Button variant="contained" color="primary">Adicionar Marca</Button>
+        <Button variant="contained" color={isCreateMode ? "inherit" : "success"} onClick={() => setIsCreateMode(!isCreateMode)}>
+          {isCreateMode ? "Cancelar" : "Adicionar Marca"}
+        </Button>
       </Box>
+      {isCreateMode && (
+        <form onSubmit={handleCreateSubmit} style={{ display: "flex", gap: 3 }}>
+          <TextField
+            type="text"
+            autoComplete="off"
+            size="small"
+            name="nome"
+            placeholder="Insira o nome da marca"
+            onChange={handleChangeCreateNome}
+            value={formData.nome}
+            error={errors}
+            helperText={errors}
+          />
+          <Button variant="contained" type="submit" sx={{ height: "min-content" }}>
+            Criar
+          </Button>
+        </form>
+      )}
+      <AlertModal ContentText="Marca cadastrada com sucesso" open={openConfirm} autoHideDuration={3000} onClose={() => setOpenConfirm(false)} severity="success" />
       <TableContainer>
         {marcas.length > 0 ? (
           <Table>
