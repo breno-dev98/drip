@@ -10,6 +10,7 @@ import {
   TableHead,
   TableRow,
   TextField,
+  Typography,
 } from "@mui/material";
 import AlertModal from "../../components/ui/AlertModal";
 import { marcasServices } from "../../services/marcasServices";
@@ -21,11 +22,11 @@ const MarcasPage = () => {
   const [isEditMode, setIsEditMode] = useState(null);
   const [isCreateMode, setIsCreateMode] = useState(false);
   const [editedNome, setEditedNome] = useState("");
-  const [openConfirm, setOpenConfirm] = useState(false)
+  const [openConfirm, setOpenConfirm] = useState(false);
   const [formData, setFormData] = useState({
     nome: "",
   });
-  const [errors, setErros] = useState(null)
+  const [errors, setErros] = useState(null);
 
   const ConfirmDelete = async (marca) => {
     return Swal.fire({
@@ -36,7 +37,6 @@ const MarcasPage = () => {
       confirmButtonText: "Excluir",
       confirmButtonColor: "red",
     });
-    return result.isConfirmed;
   };
 
   const handleDeleteMarca = async (marca) => {
@@ -44,7 +44,7 @@ const MarcasPage = () => {
     if (result.isConfirmed) {
       await marcasServices.delete(marca.id);
       alert("confirmado");
-      setMarcas((...prev) => prev)
+      setMarcas((...prev) => prev);
     }
   };
 
@@ -76,6 +76,9 @@ const MarcasPage = () => {
       setMarcas((prev) => prev.map((marca) => (marca.id === item.id ? { ...marca, nome: editedNome } : marca)));
       handleEditOff();
     } catch (error) {
+      if (error.response.data.error.includes("existe")) {
+        setErros("Essa marca já existe.");
+      }
       console.error("Erro ao salvar edição", error);
     }
   };
@@ -93,10 +96,10 @@ const MarcasPage = () => {
 
   useEffect(() => {
     if (isCreateMode === false) {
-      setFormData({nome: ""})
-      setErros(null)
+      setFormData({ nome: "" });
+      setErros(null);
     }
-  }, [isCreateMode])
+  }, [isCreateMode, isEditMode]);
 
   const handleCreateSubmit = async (e) => {
     e.preventDefault();
@@ -104,16 +107,16 @@ const MarcasPage = () => {
       if (formData.nome.trim() !== "") {
         await marcasServices.create(formData);
         setFormData({ nome: "" });
-        setOpenConfirm(true)
+        setOpenConfirm(true);
         setMarcas((...prev) => prev);
       } else {
         setErros("O nome é obrigatório");
       }
     } catch (error) {
       if (error.response.data.error.includes("existe")) {
-        setErros("A Marca já existe")
+        setErros("A Marca já existe");
       }
-      console.error("Erro ao criar marca", error)
+      console.error("Erro ao criar marca", error);
     }
   };
 
@@ -121,29 +124,37 @@ const MarcasPage = () => {
     <Container maxWidth="lg">
       <Box display="flex" justifyContent="space-between">
         <h1>MARCAS</h1>
-        <Button variant="contained" color={isCreateMode ? "inherit" : "success"} onClick={() => setIsCreateMode(!isCreateMode)}>
-          {isCreateMode ? "Cancelar" : "Adicionar Marca"}
-        </Button>
-      </Box>
-      {isCreateMode && (
-        <form onSubmit={handleCreateSubmit} style={{ display: "flex", gap: 3 }}>
-          <TextField
-            type="text"
-            autoComplete="off"
-            size="small"
-            name="nome"
-            placeholder="Insira o nome da marca"
-            onChange={handleChangeCreateNome}
-            value={formData.nome}
-            error={errors}
-            helperText={errors}
-          />
-          <Button variant="contained" type="submit" sx={{ height: "min-content" }}>
-            Criar
+        <Box display="flex" alignItems='center' gap={3}>
+          {isCreateMode && (
+            <form onSubmit={handleCreateSubmit} style={{ display: "flex", gap: 3 }}>
+              <TextField
+                type="text"
+                autoComplete="off"
+                size="small"
+                name="nome"
+                placeholder="Insira o nome da marca"
+                onChange={handleChangeCreateNome}
+                value={formData.nome}
+                error={errors}
+                helperText={errors}
+              />
+              <Button variant="contained" type="submit" sx={{ height: "min-content" }}>
+                Criar
+              </Button>
+            </form>
+          )}
+          <Button variant="contained" color={isCreateMode ? "inherit" : "success"} onClick={() => setIsCreateMode(!isCreateMode)}>
+            {isCreateMode ? "Cancelar" : "Adicionar Marca"}
           </Button>
-        </form>
-      )}
-      <AlertModal ContentText="Marca cadastrada com sucesso" open={openConfirm} autoHideDuration={3000} onClose={() => setOpenConfirm(false)} severity="success" />
+        </Box>
+      </Box>
+      <AlertModal
+        ContentText="Marca cadastrada com sucesso"
+        open={openConfirm}
+        autoHideDuration={3000}
+        onClose={() => setOpenConfirm(false)}
+        severity="success"
+      />
       <TableContainer>
         {marcas.length > 0 ? (
           <Table>
@@ -169,6 +180,8 @@ const MarcasPage = () => {
                         placeholder="Nome"
                         value={editedNome}
                         onChange={handleChangeNome}
+                        error={errors}
+                        helperText={errors}
                       />
                     ) : (
                       item.nome
@@ -198,11 +211,9 @@ const MarcasPage = () => {
             </TableBody>
           </Table>
         ) : (
-            <Box display='flex' justifyContent='center' alignItems='center' height='100vh'>
-              <Typography variant="h6">
-                Nenhuma marca existente
-              </Typography>
-            </Box>
+          <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+            <Typography variant="h6">Nenhuma marca existente</Typography>
+          </Box>
         )}
       </TableContainer>
     </Container>
