@@ -8,7 +8,7 @@ import { useIsMobile } from "../../utils/MediaQuery";
 import { Avatar, Button, Container, Divider, Drawer, List, ListItem, ListItemButton, ListItemIcon, Menu, MenuItem, MenuList } from "@mui/material";
 import { Link } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
-import { House, LayoutGrid, Tags, CircleUserRound, LogOut, Settings } from "lucide-react";
+import { House, LayoutGrid, Tags, CircleUserRound, LogOut, Settings, Package } from "lucide-react";
 import { AuthContext } from "../../context/AuthContext";
 import { jwtDecode } from "jwt-decode";
 
@@ -31,6 +31,7 @@ export default function Header() {
   const isMobile = useIsMobile();
   const pagesLinks = [
     { to: "/", label: "Inicio", icon: <House size={24} /> },
+    { to: "/produtos", label: "Produtos", icon: <Package size={24} /> },
     { to: "/categorias", label: "Categorias", icon: <LayoutGrid size={24} /> },
     { to: "/marcas", label: "Marcas", icon: <Tags size={24} /> },
   ];

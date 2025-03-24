@@ -5,6 +5,7 @@ import Layout from "../components/layout/Layout";
 import HomePage from "../pages/Home";
 import CategoriasPage from "../pages/Categorias";
 import MarcasPage from "../pages/Marcas";
+import ProdutosPage from "../pages/Produtos";
 import CadastroPage from "../pages/CadastroPage";
 import LoginPage from "../pages/LoginPage";
 import PrivateRoutes from "./private.routes";
@@ -28,6 +29,7 @@ const AppRoutes = () => {
             <Route index element={<HomePage />} />
             <Route path="/categorias" element={<CategoriasPage />} />
             <Route path="/marcas" element={<MarcasPage />} />
+            <Route path="/produtos" element={<ProdutosPage />} />
           </Route>
         </Route>
 
