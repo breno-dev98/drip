@@ -10,9 +10,13 @@ import CadastroPage from "../pages/CadastroPage";
 import LoginPage from "../pages/LoginPage";
 import PrivateRoutes from "./private.routes";
 import PublicRoutes from "./public.routes";
+import LoadingBackdrop from "../components/ui/LoadingBackDrop";
 
 const AppRoutes = () => {
-  const { auth } = useContext(AuthContext);
+  const { auth, loading } = useContext(AuthContext);
+  if (loading) {
+    return <LoadingBackdrop open={loading}/>
+  }
 
   return (
     <BrowserRouter>
