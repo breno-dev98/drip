@@ -21,6 +21,7 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { formatarParaBRL } from "../../utils/formatarParaBRL";
 
 const ProdutosPage = () => {
   const tHeaders = ["#ID", "Nome", "Descrição", "Avaliação", "Tamanho", "Cor", "Preço", "Categoria", "Cadastrado em:", "Editado em:"];
@@ -36,7 +37,7 @@ const ProdutosPage = () => {
       .number({ required_error: "Tamanho é obrigatório", invalid_type_error: "Tamanho deve ser um número" })
       .positive("O Tamanho deve ser um número positivo"),
     cor: z.string().min(1, "Cor é obrigatória"),
-    preco: z
+    preco: z.coerce
       .number({ required_error: "Preço é obrigatório", invalid_type_error: "Preço deve ser númerico" })
       .positive("O Preço deve ser um número positivo"),
     categoriaId: z.number({invalid_type_error: "Categoria deve ser um número"}).min(1, "Categoria é obrigatória"),
@@ -54,15 +55,14 @@ const ProdutosPage = () => {
     setOpen(false);
     reset();
   };
-
+  
+  
   const onSubmit = async (data) => {
     try {
-      await produtosServices.create(data);
+      const novoProduto = await produtosServices.create(data);
       setOpen(false);
       reset();
-      console.log(data);
-      const produtosAtualizados = await produtosServices.getAll();
-      setProdutos(produtosAtualizados);
+      setProdutos((prev) => [...prev, novoProduto]);
     } catch (error) {
       console.error("Erro ao cadastrar produto:", error);
     }
@@ -98,7 +98,7 @@ const ProdutosPage = () => {
           Adicionar Produto
         </Button>
       </Box>
-
+      <strong>Total de produtos:</strong> <span>{produtos.length}</span>
       <Dialog open={open} onClose={handleOnClose} fullWidth maxWidth="sm">
         <DialogTitle>Cadastrar Produto</DialogTitle>
         <DialogContent>
@@ -146,10 +146,9 @@ const ProdutosPage = () => {
             <TextField
               size="small"
               label="Preço"
-              type="number"
               fullWidth
               margin="dense"
-              {...register("preco", { valueAsNumber: true })}
+              {...register("preco")}
               error={!!errors.preco}
               helperText={errors.preco?.message}
             />
@@ -175,12 +174,12 @@ const ProdutosPage = () => {
           </form>
         </DialogContent>
       </Dialog>
-
       <TableComponent
         tHeaders={tHeaders}
         tBody={produtos.map((produto) => ({
           ...produto,
           categoriaId: getCategoriaNome(produto.categoriaId),
+          preco: formatarParaBRL(produto.preco),
         }))}
       />
     </Container>
