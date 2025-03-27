@@ -24,10 +24,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { formatarParaBRL } from "../../utils/formatarParaBRL";
 
 const ProdutosPage = () => {
-  const tHeaders = ["#ID", "Nome", "Descrição", "Avaliação", "Tamanho", "Cor", "Preço", "Categoria", "Cadastrado em:", "Editado em:"];
+  const tHeaders = ["#ID", "Nome", "Descrição", "Tamanho", "Cor", "Preço", "Categoria", "Ações"];
   const [produtos, setProdutos] = useState([]);
   const [categorias, setCategorias] = useState([]);
   const [open, setOpen] = useState(false);
+  const [produtoEdit, setProdutoEdit] = useState(null);
 
   const schema = z.object({
     nome: z.string().nonempty("Nome é obrigatório"),
@@ -53,16 +54,24 @@ const ProdutosPage = () => {
 
   const handleOnClose = () => {
     setOpen(false);
+    setProdutoEdit(null);
     reset();
   };
   
   
   const onSubmit = async (data) => {
     try {
-      const novoProduto = await produtosServices.create(data);
-      setOpen(false);
-      reset();
-      setProdutos((prev) => [...prev, novoProduto]);
+      if (produtoEdit) {
+        // Atualizar produto existente
+        await produtosServices.update(produtoEdit.id, data);
+        setProdutos((prev) => prev.map((p) => (p.id === produtoEdit.id ? { ...p, ...data } : p)));
+      } else {
+        // Criar novo produto
+        const novoProduto = await produtosServices.create(data);
+        setProdutos((prev) => [...prev, novoProduto]);
+      }
+
+      handleOnClose();
     } catch (error) {
       console.error("Erro ao cadastrar produto:", error);
     }
@@ -84,6 +93,19 @@ const ProdutosPage = () => {
     fetchData();
   }, [setValue]);
 
+  const editarProduto = (produto) => {
+    const produtoEditavel = produtos.find((p) => p.id === produto.id)    
+    setProdutoEdit(produtoEditavel)
+    setOpen(true)
+    setValue("nome", produtoEditavel.nome);
+    setValue("descricao", produtoEditavel.descricao);
+    setValue("avaliacao", produtoEditavel.avaliacao);
+    setValue("tamanho", produtoEditavel.tamanho);
+    setValue("cor", produtoEditavel.cor);
+    setValue("preco", produtoEditavel.preco);
+    setValue("categoriaId", produtoEditavel.categoriaId);
+  }
+
   const getCategoriaNome = (categoriaId) => {
     if (!categoriaId) return "Sem Categoria";
     const categoria = categorias.find((c) => c.id === categoriaId);
@@ -100,7 +122,7 @@ const ProdutosPage = () => {
       </Box>
       <strong>Total de produtos:</strong> <span>{produtos.length}</span>
       <Dialog open={open} onClose={handleOnClose} fullWidth maxWidth="sm">
-        <DialogTitle>Cadastrar Produto</DialogTitle>
+        <DialogTitle>{produtoEdit ? "Editar Produto" : "Cadastrar Produto"}</DialogTitle>
         <DialogContent>
           <form onSubmit={handleSubmit(onSubmit)}>
             <TextField
@@ -154,7 +176,7 @@ const ProdutosPage = () => {
             />
             <FormControl fullWidth margin="dense" error={!!errors.categoriaId}>
               <InputLabel id="categoria-label">Categoria</InputLabel>
-              <Select label="Categoria" size="medium" defaultValue="" {...register("categoriaId", { valueAsNumber: true })}>
+              <Select label="Categoria" size="medium" value={produtoEdit?.categoriaId || ""} {...register("categoriaId", { valueAsNumber: true })}>
                 {categorias.map((categoria) => (
                   <MenuItem key={categoria.id} value={categoria.id}>
                     {categoria.nome}
@@ -167,16 +189,20 @@ const ProdutosPage = () => {
               <Button onClick={handleOnClose} variant="outlined" color="inherit">
                 Cancelar
               </Button>
-              <Button type="submit" color="primary" variant="contained">
-                Salvar
+              <Button type="submit" color={produtoEdit ? "success" : "primary"} variant="contained">
+                {produtoEdit ? "Salvar Edição" : "Salvar"}
               </Button>
             </DialogActions>
           </form>
         </DialogContent>
       </Dialog>
       <TableComponent
+        actions={{
+          onEdit: (row) => editarProduto(row),
+          onDelete: (row) => console.log("Deletar:", row),
+        }}
         tHeaders={tHeaders}
-        tBody={produtos.map((produto) => ({
+        tBody={produtos.map(({ createdAt, updatedAt, avaliacao, ...produto }) => ({
           ...produto,
           categoriaId: getCategoriaNome(produto.categoriaId),
           preco: formatarParaBRL(produto.preco),
