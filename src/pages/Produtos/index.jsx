@@ -22,6 +22,8 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { formatarParaBRL } from "../../utils/formatarParaBRL";
+import ConfirmDeleteModal from "../../components/ui/ConfirmDeleteModal"
+import Swal from "sweetalert2";
 
 const ProdutosPage = () => {
   const tHeaders = ["#ID", "Nome", "Descrição", "Tamanho", "Cor", "Preço", "Categoria", "Ações"];
@@ -77,6 +79,29 @@ const ProdutosPage = () => {
     }
   };
 
+  const ConfirmDelete = async (produto) => {
+      return Swal.fire({
+        title: "Atenção",
+        html: `Tem certeza que deseja exlcuir o produto <strong>${produto.nome}</strong>?`,
+        showCancelButton: true,
+        cancelButtonText: "Cancelar",
+        confirmButtonText: "Excluir",
+        confirmButtonColor: "red",
+      });
+    };
+
+  const handleDeleteProduct = async (produto) => {
+    try {
+      const result = await ConfirmDelete(produto);
+      if (result.isConfirmed) {
+        await produtosServices.delete(produto.id);
+      }
+      setProdutos((prev) => prev.filter((p) => p.id !== produto.id));
+    } catch (error) {
+      console.error("Erro ao deletar produto");
+    }
+  }
+  
   useEffect(() => {
     const fetchData = async () => {
       const produtosResponse = await produtosServices.getAll();
@@ -199,7 +224,7 @@ const ProdutosPage = () => {
       <TableComponent
         actions={{
           onEdit: (row) => editarProduto(row),
-          onDelete: (row) => console.log("Deletar:", row),
+          onDelete: (row) => handleDeleteProduct(row),
         }}
         tHeaders={tHeaders}
         tBody={produtos.map(({ createdAt, updatedAt, avaliacao, ...produto }) => ({
