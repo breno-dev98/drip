@@ -85,6 +85,7 @@ export default function LoginForm() {
           <TextField
             label="E-mail"
             fullWidth
+            id="email"
             size="small"
             margin="dense"
             {...register("email")}
@@ -96,6 +97,7 @@ export default function LoginForm() {
               label="Senha"
               type={showPassword ? "text" : "password"}
               fullWidth
+              id="senha"
               size="small"
               margin="dense"
               {...register("senha")}
@@ -119,12 +121,12 @@ export default function LoginForm() {
               }}
             />
           </Box>
-          <Button type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2 }}>
+          <Button type="submit" id="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2 }}>
             Entrar
           </Button>
           <Box component="span" display="flex" justifyContent="center" my={2} gap={1}>
             Ainda não tem uma conta?
-            <Link to="/cadastro" style={{ textDecoration: "none", color: "blue" }}>
+            <Link to="/cadastro" id="cadastro" style={{ textDecoration: "none", color: "blue" }}>
               Cadastre-se
             </Link>
           </Box>

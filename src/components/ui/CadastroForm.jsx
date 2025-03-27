@@ -86,6 +86,7 @@ export default function CadastroForm() {
           <TextField
             label="Nome"
             fullWidth
+            id="nome"
             size="small"
             margin="dense"
             {...register("nome")}
@@ -95,6 +96,7 @@ export default function CadastroForm() {
           <TextField
             label="E-mail"
             fullWidth
+            id="email"
             size="small"
             margin="dense"
             {...register("email")}
@@ -106,6 +108,7 @@ export default function CadastroForm() {
               label="Senha"
               type={showPassword ? "text" : "password"}
               fullWidth
+              id="senha"
               size="small"
               margin="dense"
               {...register("senha")}
@@ -134,6 +137,7 @@ export default function CadastroForm() {
             label="Telefone"
             type="tel"
             fullWidth
+            id="telefone"
             size="small"
             margin="dense"
             placeholder="(99)99999-9999"
@@ -146,6 +150,7 @@ export default function CadastroForm() {
             label="CPF"
             type="number"
             fullWidth
+            id="cpf"
             size="small"
             margin="dense"
             placeholder="57249557092"
@@ -154,7 +159,7 @@ export default function CadastroForm() {
             helperText={errors.cpf?.message}
             inputProps={{ maxLength: 15 }}
           />
-          <Button type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2 }}>
+          <Button type="submit" id="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2 }}>
             Cadastrar
           </Button>
           <Box component="span" display="flex" justifyContent="center" my={2} gap={1}>
