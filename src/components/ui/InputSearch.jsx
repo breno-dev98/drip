@@ -2,8 +2,11 @@ import React, { useState, useEffect } from "react";
 import { TextField, InputAdornment, IconButton } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import ClearIcon from "@mui/icons-material/Clear";
+import { useLocation } from "react-router-dom";
 
 const InputSearch = ({ value, onSearch }) => {
+  let location = useLocation()
+  const urlName = location.pathname.replace("/", "")
   const [searchTerm, setSearchTerm] = useState(value || "");
 
   useEffect(() => {
@@ -26,7 +29,7 @@ const InputSearch = ({ value, onSearch }) => {
       variant="outlined"
       value={searchTerm} // Agora o valor é controlado tanto internamente quanto externamente
       size="small"
-      placeholder="Buscar categorias..."
+      placeholder={`Buscar ${urlName}...`}
       onChange={handleSearchChange}
       InputProps={{
         startAdornment: (

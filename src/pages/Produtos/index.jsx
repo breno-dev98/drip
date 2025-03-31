@@ -17,13 +17,13 @@ import {
 import TableComponent from "../../components/ui/TableComponent";
 import { produtosServices } from "../../services/produtosServices";
 import { categoriaServices } from "../../services/categoriaServices";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { formatarParaBRL } from "../../utils/formatarParaBRL";
-import ConfirmDeleteModal from "../../components/ui/ConfirmDeleteModal"
 import Swal from "sweetalert2";
+import InputSearch from "../../components/ui/InputSearch";
 
 const ProdutosPage = () => {
   const tHeaders = ["#ID", "Nome", "Descrição", "Tamanho", "Cor", "Preço", "Categoria", "Ações"];
@@ -31,11 +31,12 @@ const ProdutosPage = () => {
   const [categorias, setCategorias] = useState([]);
   const [open, setOpen] = useState(false);
   const [produtoEdit, setProdutoEdit] = useState(null);
+  const [busca, setBusca] = useState("");
 
   const schema = z.object({
     nome: z.string().nonempty("Nome é obrigatório"),
     descricao: z.string().min(1, "Descrição é obrigatória"),
-    avaliacao: z.number({invalid_type_error: 'Avaliação é obrigatória'}).min(1, "O valor mínimo é 1").max(5, "O valor máximo é 5"),
+    avaliacao: z.number({ invalid_type_error: "Avaliação é obrigatória" }).min(1, "O valor mínimo é 1").max(5, "O valor máximo é 5"),
     tamanho: z
       .number({ required_error: "Tamanho é obrigatório", invalid_type_error: "Tamanho deve ser um número" })
       .positive("O Tamanho deve ser um número positivo"),
@@ -43,7 +44,7 @@ const ProdutosPage = () => {
     preco: z.coerce
       .number({ required_error: "Preço é obrigatório", invalid_type_error: "Preço deve ser númerico" })
       .positive("O Preço deve ser um número positivo"),
-    categoriaId: z.number({invalid_type_error: "Categoria deve ser um número"}).min(1, "Categoria é obrigatória"),
+    categoriaId: z.number({ invalid_type_error: "Categoria deve ser um número" }).min(1, "Categoria é obrigatória"),
   });
 
   const {
@@ -59,8 +60,7 @@ const ProdutosPage = () => {
     setProdutoEdit(null);
     reset();
   };
-  
-  
+
   const onSubmit = async (data) => {
     try {
       if (produtoEdit) {
@@ -80,15 +80,15 @@ const ProdutosPage = () => {
   };
 
   const ConfirmDelete = async (produto) => {
-      return Swal.fire({
-        title: "Atenção",
-        html: `Tem certeza que deseja exlcuir o produto <strong>${produto.nome}</strong>?`,
-        showCancelButton: true,
-        cancelButtonText: "Cancelar",
-        confirmButtonText: "Excluir",
-        confirmButtonColor: "red",
-      });
-    };
+    return Swal.fire({
+      title: "Atenção",
+      html: `Tem certeza que deseja exlcuir o produto <strong>${produto.nome}</strong>?`,
+      showCancelButton: true,
+      cancelButtonText: "Cancelar",
+      confirmButtonText: "Excluir",
+      confirmButtonColor: "red",
+    });
+  };
 
   const handleDeleteProduct = async (produto) => {
     try {
@@ -100,8 +100,8 @@ const ProdutosPage = () => {
     } catch (error) {
       console.error("Erro ao deletar produto");
     }
-  }
-  
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       const produtosResponse = await produtosServices.getAll();
@@ -118,10 +118,21 @@ const ProdutosPage = () => {
     fetchData();
   }, [setValue]);
 
+  const normalizar = (texto) =>
+    texto
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "");
+
+  const produtosFiltrados = useMemo(() => {
+    if (!busca) return produtos;
+    return produtos.filter((p) => normalizar(p.nome).includes(normalizar(busca)));
+  }, [busca, produtos]);
+  
   const editarProduto = (produto) => {
-    const produtoEditavel = produtos.find((p) => p.id === produto.id)    
-    setProdutoEdit(produtoEditavel)
-    setOpen(true)
+    const produtoEditavel = produtos.find((p) => p.id === produto.id);
+    setProdutoEdit(produtoEditavel);
+    setOpen(true);
     setValue("nome", produtoEditavel.nome);
     setValue("descricao", produtoEditavel.descricao);
     setValue("avaliacao", produtoEditavel.avaliacao);
@@ -129,7 +140,7 @@ const ProdutosPage = () => {
     setValue("cor", produtoEditavel.cor);
     setValue("preco", produtoEditavel.preco);
     setValue("categoriaId", produtoEditavel.categoriaId);
-  }
+  };
 
   const getCategoriaNome = (categoriaId) => {
     if (!categoriaId) return "Sem Categoria";
@@ -139,13 +150,16 @@ const ProdutosPage = () => {
 
   return (
     <Container>
-      <Box display="flex" justifyContent="space-between">
+      <Box display="flex" my={1} justifyContent="space-between">
         <Typography variant="h4">Produtos</Typography>
         <Button variant="contained" color="success" onClick={() => setOpen(true)}>
           Adicionar Produto
         </Button>
       </Box>
       <strong>Total de produtos:</strong> <span>{produtos.length}</span>
+      <Box display="flex" my={1} flexDirection="column">
+        <InputSearch value={busca} onSearch={setBusca} />
+      </Box>
       <Dialog open={open} onClose={handleOnClose} fullWidth maxWidth="sm">
         <DialogTitle>{produtoEdit ? "Editar Produto" : "Cadastrar Produto"}</DialogTitle>
         <DialogContent>
@@ -227,7 +241,7 @@ const ProdutosPage = () => {
           onDelete: (row) => handleDeleteProduct(row),
         }}
         tHeaders={tHeaders}
-        tBody={produtos.map(({ createdAt, updatedAt, avaliacao, ...produto }) => ({
+        tBody={produtosFiltrados.map(({ createdAt, updatedAt, avaliacao, ...produto }) => ({
           ...produto,
           categoriaId: getCategoriaNome(produto.categoriaId),
           preco: formatarParaBRL(produto.preco),
