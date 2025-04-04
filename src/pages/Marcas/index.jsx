@@ -17,18 +17,15 @@ import { marcasServices } from "../../services/marcasServices";
 import { useEffect, useState } from "react";
 import { Check, Edit, Trash, X } from "lucide-react";
 import Swal from "sweetalert2";
-import { userData } from "../../utils/userData";
 const MarcasPage = () => {
   const [marcas, setMarcas] = useState([]);
   const [isEditMode, setIsEditMode] = useState(null);
   const [isCreateMode, setIsCreateMode] = useState(false);
   const [editedNome, setEditedNome] = useState("");
   const [openConfirm, setOpenConfirm] = useState(false);
-  const { id } = userData();
 
   const [formData, setFormData] = useState({
     nome: "",
-    user_id: id,
   });
   const [errors, setErros] = useState(null);
 
@@ -54,12 +51,12 @@ const MarcasPage = () => {
 
   useEffect(() => {
     const fetchMarcas = async () => {
-      const res = await marcasServices.getAll(id);
+      const res = await marcasServices.getAll();
       setMarcas(res);
     };
 
     fetchMarcas();
-  }, [marcas.length, id]);
+  }, [marcas.length]);
 
   const handleChangeNome = (e) => {
     setEditedNome(e.target.value);
@@ -104,7 +101,7 @@ const MarcasPage = () => {
 
   useEffect(() => {
     if (isCreateMode === false) {
-      setFormData({ nome: "", user_id: id });
+      setFormData({ nome: "" });
       setErros(null);
     }
   }, [isCreateMode, isEditMode]);
@@ -115,7 +112,7 @@ const MarcasPage = () => {
     try {
       if (formData.nome.trim() !== "") {
         await marcasServices.create(formData);
-        setFormData({ nome: "", user_id: id });
+        setFormData({ nome: "" });
         setOpenConfirm(true);
         setMarcas((...prev) => prev);
       } else {

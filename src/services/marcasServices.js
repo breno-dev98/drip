@@ -1,15 +1,10 @@
 import { api } from "../api"
-import { userData } from "../utils/userData";
 
 export const marcasServices = {
 
-    getAll: async (userId) => {
+    getAll: async () => {
         try {
-            const response = await api.get("/marcas", {
-                params: { user_id: userId }
-            });
-            console.log(response);
-            
+            const response = await api.get("/marcas");            
             return response.data
         } catch (error) {
             console.error("Erro ao buscar marcas", error);
