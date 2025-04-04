@@ -17,14 +17,18 @@ import { marcasServices } from "../../services/marcasServices";
 import { useEffect, useState } from "react";
 import { Check, Edit, Trash, X } from "lucide-react";
 import Swal from "sweetalert2";
+import { userData } from "../../utils/userData";
 const MarcasPage = () => {
   const [marcas, setMarcas] = useState([]);
   const [isEditMode, setIsEditMode] = useState(null);
   const [isCreateMode, setIsCreateMode] = useState(false);
   const [editedNome, setEditedNome] = useState("");
   const [openConfirm, setOpenConfirm] = useState(false);
+  const { id } = userData();
+
   const [formData, setFormData] = useState({
     nome: "",
+    user_id: id,
   });
   const [errors, setErros] = useState(null);
 
@@ -50,12 +54,12 @@ const MarcasPage = () => {
 
   useEffect(() => {
     const fetchMarcas = async () => {
-      const res = await marcasServices.getAll();
+      const res = await marcasServices.getAll(id);
       setMarcas(res);
     };
 
     fetchMarcas();
-  }, [marcas.length]);
+  }, [marcas.length, id]);
 
   const handleChangeNome = (e) => {
     setEditedNome(e.target.value);
@@ -73,7 +77,11 @@ const MarcasPage = () => {
   const handleEditSave = async (item) => {
     try {
       await marcasServices.update(item.id, { nome: editedNome });
-      setMarcas((prev) => prev.map((marca) => (marca.id === item.id ? { ...marca, nome: editedNome } : marca)));
+      setMarcas((prev) =>
+        prev.map((marca) =>
+          marca.id === item.id ? { ...marca, nome: editedNome } : marca
+        )
+      );
       handleEditOff();
     } catch (error) {
       if (error.response.data.error.includes("existe")) {
@@ -96,17 +104,18 @@ const MarcasPage = () => {
 
   useEffect(() => {
     if (isCreateMode === false) {
-      setFormData({ nome: "" });
+      setFormData({ nome: "", user_id: id });
       setErros(null);
     }
   }, [isCreateMode, isEditMode]);
 
   const handleCreateSubmit = async (e) => {
     e.preventDefault();
+
     try {
       if (formData.nome.trim() !== "") {
         await marcasServices.create(formData);
-        setFormData({ nome: "" });
+        setFormData({ nome: "", user_id: id });
         setOpenConfirm(true);
         setMarcas((...prev) => prev);
       } else {
@@ -124,9 +133,12 @@ const MarcasPage = () => {
     <Container maxWidth="lg">
       <Box display="flex" justifyContent="space-between">
         <h1>MARCAS</h1>
-        <Box display="flex" alignItems='center' gap={3}>
+        <Box display="flex" alignItems="center" gap={3}>
           {isCreateMode && (
-            <form onSubmit={handleCreateSubmit} style={{ display: "flex", gap: 3 }}>
+            <form
+              onSubmit={handleCreateSubmit}
+              style={{ display: "flex", gap: 3 }}
+            >
               <TextField
                 type="text"
                 autoComplete="off"
@@ -138,12 +150,20 @@ const MarcasPage = () => {
                 error={errors}
                 helperText={errors}
               />
-              <Button variant="contained" type="submit" sx={{ height: "min-content" }}>
+              <Button
+                variant="contained"
+                type="submit"
+                sx={{ height: "min-content" }}
+              >
                 Criar
               </Button>
             </form>
           )}
-          <Button variant="contained" color={isCreateMode ? "inherit" : "success"} onClick={() => setIsCreateMode(!isCreateMode)}>
+          <Button
+            variant="contained"
+            color={isCreateMode ? "inherit" : "success"}
+            onClick={() => setIsCreateMode(!isCreateMode)}
+          >
             {isCreateMode ? "Cancelar" : "Adicionar Marca"}
           </Button>
         </Box>
@@ -160,19 +180,31 @@ const MarcasPage = () => {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell sx={{ fontWeight: "bold", fontSize: "20px" }}>#ID</TableCell>
-                <TableCell sx={{ fontWeight: "bold", fontSize: "20px" }}>Marca</TableCell>
-                <TableCell sx={{ fontWeight: "bold", fontSize: "20px" }}>Ações</TableCell>
+                <TableCell sx={{ fontWeight: "bold", fontSize: "20px" }}>
+                  #ID
+                </TableCell>
+                <TableCell sx={{ fontWeight: "bold", fontSize: "20px" }}>
+                  Marca
+                </TableCell>
+                <TableCell sx={{ fontWeight: "bold", fontSize: "20px" }}>
+                  Ações
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {marcas.map((item, index) => (
                 <TableRow key={item.id}>
-                  <TableCell sx={{ fontWeight: "bold", fontSize: "15px" }}>{index + 1}</TableCell>
+                  <TableCell sx={{ fontWeight: "bold", fontSize: "15px" }}>
+                    {index + 1}
+                  </TableCell>
                   <TableCell sx={{ fontSize: "15px" }}>
                     {isEditMode === item.id ? (
                       <TextField
-                        sx={{ width: "auto", minWidth: "200px", maxWidth: "300px" }}
+                        sx={{
+                          width: "auto",
+                          minWidth: "200px",
+                          maxWidth: "300px",
+                        }}
                         type="text"
                         autoComplete="off"
                         size="small"
@@ -191,7 +223,10 @@ const MarcasPage = () => {
                     {isEditMode === item.id ? (
                       <>
                         <IconButton title="Salvar">
-                          <Check color="green" onClick={() => handleEditSave(item)} />
+                          <Check
+                            color="green"
+                            onClick={() => handleEditSave(item)}
+                          />
                         </IconButton>
                         <IconButton title="Cancelar">
                           <X color="gray" onClick={() => handleEditOff()} />
@@ -203,7 +238,10 @@ const MarcasPage = () => {
                       </IconButton>
                     )}
                     <IconButton title="Excluir">
-                      <Trash style={{ color: "red" }} onClick={() => handleDeleteMarca(item)} />
+                      <Trash
+                        style={{ color: "red" }}
+                        onClick={() => handleDeleteMarca(item)}
+                      />
                     </IconButton>
                   </TableCell>
                 </TableRow>
@@ -211,7 +249,12 @@ const MarcasPage = () => {
             </TableBody>
           </Table>
         ) : (
-          <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+          <Box
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            height="100vh"
+          >
             <Typography variant="h6">Nenhuma marca existente</Typography>
           </Box>
         )}
