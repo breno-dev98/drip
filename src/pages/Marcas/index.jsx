@@ -81,10 +81,7 @@ const MarcasPage = () => {
       );
       handleEditOff();
     } catch (error) {
-      if (error.response.data.error.includes("existe")) {
-        setErros("Essa marca já existe.");
-      }
-      console.error("Erro ao salvar edição", error);
+      console.error("Erro ao salvar edição", error.message);
     }
   };
 
@@ -119,10 +116,7 @@ const MarcasPage = () => {
         setErros("O nome é obrigatório");
       }
     } catch (error) {
-      if (error.response.data.error.includes("existe")) {
-        setErros("A Marca já existe");
-      }
-      console.error("Erro ao criar marca", error);
+      console.error("Erro ao criar marca", error.message);
     }
   };
 

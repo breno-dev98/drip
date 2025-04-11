@@ -23,6 +23,7 @@ export const marcasServices = {
     },
 
     create: async (data) => {
+        
         try {
             const response = await api.post("/marcas", data)
             return response.data;
